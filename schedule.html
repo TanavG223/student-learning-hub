@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnHub – Schedule</title>
+  <link rel="stylesheet" href="style.css?v=20241113">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/learnhub-logo.svg" alt="LearnHub logo">
+    </div>
+    <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a class="active" href="schedule.html">Schedule</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="groups.html">Groups</a>
+      <a href="resources.html">Resources</a>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+    </div>
+  </nav>
+
+  <main class="page-container">
+    <div class="page-header">
+      <div class="page-title-group">
+        <h2>Tutoring Schedule</h2>
+        <p>Join live sessions and connect with peer tutors</p>
+      </div>
+      <button class="cta-button" id="createSessionBtn"><i class="fas fa-plus"></i> Create Session</button>
+    </div>
+
+    <div class="tab-bar" id="scheduleTabs">
+      <button class="tab-button" data-filter="all">All</button>
+      <button class="tab-button active" data-filter="upcoming">Upcoming</button>
+      <button class="tab-button" data-filter="today">Today</button>
+    </div>
+
+    <section class="card-panel">
+      <h3 class="panel-title">Sessions</h3>
+      <div class="session-list" data-session-list></div>
+      <div class="empty-state" data-empty-state>
+        <div class="empty-icon"><i class="far fa-calendar"></i></div>
+        <h3>No sessions scheduled</h3>
+        <p>Be the first to create a tutoring session!</p>
+      </div>
+    </section>
+  </main>
+  <script src="app.js?v=20241113"></script>
+  <script>
+    const storageKey = 'learnhubSessions';
+    const sessionListEl = document.querySelector('[data-session-list]');
+    const emptyStateEl = document.querySelector('[data-empty-state]');
+    const tabButtons = document.querySelectorAll('#scheduleTabs .tab-button');
+    let activeFilter = 'upcoming';
+    let sessions = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+    const saveSessions = () => localStorage.setItem(storageKey, JSON.stringify(sessions));
+
+    const isToday = (dateStr) => {
+      const today = new Date().toISOString().split('T')[0];
+      return dateStr === today;
+    };
+
+    const renderSessions = () => {
+      const today = new Date().toISOString().split('T')[0];
+      const filtered = sessions.filter((session) => {
+        if (activeFilter === 'today') {
+          return session.date === today;
+        }
+        if (activeFilter === 'upcoming') {
+          return session.date >= today;
+        }
+        return true;
+      });
+
+      sessionListEl.innerHTML = '';
+      if (!filtered.length) {
+        sessionListEl.hidden = true;
+        emptyStateEl.hidden = false;
+        return;
+      }
+
+      sessionListEl.hidden = false;
+      emptyStateEl.hidden = true;
+
+      filtered
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .forEach((session) => {
+          const wrapper = document.createElement('article');
+          wrapper.className = 'session-card';
+          wrapper.innerHTML = `
+            <div class="session-info">
+              <h4 class="session-title">${session.topic}</h4>
+              <div class="session-meta">${session.subject} • ${session.date} at ${session.time} • Mentor: ${session.mentor}</div>
+            </div>
+            <div class="pill">${isToday(session.date) ? 'Today' : 'Upcoming'}</div>
+            <div class="session-actions">
+              <button data-delete-session="${session.id}">Remove</button>
+            </div>
+          `;
+          sessionListEl.appendChild(wrapper);
+        });
+    };
+
+    tabButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        tabButtons.forEach((btn) => btn.classList.remove('active'));
+        button.classList.add('active');
+        activeFilter = button.dataset.filter;
+        renderSessions();
+      });
+    });
+
+    document.getElementById('createSessionBtn').addEventListener('click', () => {
+      const topic = prompt('What is the session topic?');
+      if (!topic) return;
+      const subject = prompt('Which subject is this for? (e.g., Calculus)') || 'General Study';
+      const date = prompt('Enter the date (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+      if (!date) return;
+      const time = prompt('What time?', '4:00 PM');
+      if (!time) return;
+      const mentor = prompt('Who is mentoring?', 'Peer Tutor');
+
+      const newId = window.crypto?.randomUUID ? crypto.randomUUID() : String(Date.now());
+      sessions.push({
+        id: newId,
+        topic,
+        subject,
+        date,
+        time,
+        mentor
+      });
+      if (window.learnHub?.history?.add) {
+        window.learnHub.history.add({
+          type: 'Session',
+          title: topic,
+          subject,
+          meta: `${date} • ${time}`
+        });
+      }
+      saveSessions();
+      renderSessions();
+    });
+
+    sessionListEl.addEventListener('click', (event) => {
+      if (event.target.matches('[data-delete-session]')) {
+        const sessionId = event.target.getAttribute('data-delete-session');
+        sessions = sessions.filter((session) => session.id !== sessionId);
+        saveSessions();
+        renderSessions();
+      }
+    });
+
+    renderSessions();
+  </script>
+</body>
+</html>

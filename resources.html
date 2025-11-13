@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnHub – Resources</title>
+  <link rel="stylesheet" href="style.css?v=20241113">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/learnhub-logo.svg" alt="LearnHub logo">
+    </div>
+    <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="groups.html">Groups</a>
+      <a class="active" href="resources.html">Resources</a>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+    </div>
+  </nav>
+
+  <main class="page-container">
+    <div class="page-header">
+      <div class="page-title-group">
+        <h2>Learning Resources</h2>
+        <p>Interactive materials, videos, quizzes, and more</p>
+      </div>
+      <button class="cta-button" id="addResourceBtn"><i class="fas fa-plus"></i> Add Resource</button>
+    </div>
+
+    <div class="filters-bar">
+      <div class="filters-copy">
+        <p>Select a Resource Type</p>
+        <span>Browse math and reading study tools by format</span>
+      </div>
+      <div class="filter-tabs" id="resourceFilters">
+        <button class="filter-tab active" data-type="all">All</button>
+        <button class="filter-tab" data-type="Lesson">Lesson</button>
+        <button class="filter-tab" data-type="Video">Video</button>
+        <button class="filter-tab" data-type="Quiz">Quiz</button>
+        <button class="filter-tab" data-type="Practice">Practice</button>
+        <button class="filter-tab" data-type="Document">Document</button>
+      </div>
+    </div>
+
+    <section class="card-panel">
+      <div class="grade-accordion" data-grade-accordion></div>
+      <div class="empty-state" data-resource-empty>
+        <div class="empty-icon"><i class="far fa-book"></i></div>
+        <h3>No resources found</h3>
+        <p>Select a filter to view available resources</p>
+      </div>
+    </section>
+  </main>
+  <div class="modal-backdrop is-hidden" id="resourcePlayer" role="dialog" aria-modal="true" data-resource-player>
+    <div class="modal-card resource-player">
+      <button class="modal-close" type="button" aria-label="Close player">&times;</button>
+      <div class="player-body" data-player-body></div>
+    </div>
+  </div>
+  <script src="app.js?v=20241113"></script>
+  <script>
+    const resourceKey = 'learnhubResources';
+    const accordion = document.querySelector('[data-grade-accordion]');
+    const resourceEmpty = document.querySelector('[data-resource-empty]');
+    const filterButtons = document.querySelectorAll('#resourceFilters .filter-tab');
+    const playerModal = document.getElementById('resourcePlayer');
+    const playerBody = playerModal?.querySelector('[data-player-body]');
+    const gradeLevels = Array.from({ length: 12 }, (_, index) => index + 1);
+    const coreSubjects = ['Math'];
+    let activeType = 'all';
+    let resources = [];
+    let resourceMap = new Map();
+    let practiceSession = null;
+    let needsRefreshAfterModal = false;
+    const generatorRegistry = window.learnHub?.generatorRegistry || {};
+    const userProfile = window.learnHub?.user || {};
+    const progressApi = window.learnHub?.progress;
+    let progressData = progressApi?.get?.() || {};
+    const userGrade = Number(userProfile.grade) || Number(progressData.grade) || 1;
+    const aiConfig = window.learnHub?.ai || {};
+    const rawAiEndpoint = aiConfig.endpoint || '';
+    const aiEndpoint = (window.location.protocol === 'https:' && rawAiEndpoint.startsWith('http://')) ? '' : rawAiEndpoint;
+    const aiModel = aiConfig.model || 'llama2';
+
+    const getUnlockedGrade = () => progressApi?.gradeCap?.() || userGrade;
+    let maxUnlockedGrade = getUnlockedGrade();
+
+    const callOllama = async (prompt) => {
+      if (!aiEndpoint || typeof fetch === 'undefined') return null;
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const response = await fetch(aiEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: aiModel, prompt, stream: false }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (!response.ok) throw new Error(`Status ${response.status}`);
+        const data = await response.json();
+        return data.response?.trim() || null;
+      } catch (error) {
+        console.warn('AI tutor unavailable', error);
+        return null;
+      }
+    };
+
+    const formatAiHtml = (text = '') => text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .join('<br>');
+
+    const shuffleArray = (array) => array
+      .map((value) => ({ value, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ value }) => value);
+
+    const cloneQuestionSet = (set = []) => set.map((question) => ({
+      ...question,
+      options: question.options ? [...question.options] : []
+    }));
+
+    const buildDynamicSet = (resource, mode) => {
+      const info = resource.questionGenerator;
+      if (!info) return [];
+      const registry = generatorRegistry?.[info.domain];
+      const generator = registry?.[info.key];
+      if (!generator) return [];
+      const grade = Number(info.grade || resource.grade || userGrade);
+      const count = mode === 'test' ? 5 : 3;
+      return Array.from({ length: count }, () => generator(grade));
+    };
+
+    const getQuestionSetForMode = (resource, mode) => {
+      const dynamic = buildDynamicSet(resource, mode);
+      if (dynamic.length) return dynamic;
+      const fallback = mode === 'test' ? resource.test : resource.practice;
+      return cloneQuestionSet(fallback || []);
+    };
+
+    const buildFriendlyExplanation = (question, isCorrect) => {
+      if (!question) return isCorrect ? 'Great job!' : 'Re-read the question and try again.';
+      if (isCorrect) {
+        return 'Great job! Keep using that approach.';
+      }
+      const base = question.explanation
+        ? question.explanation.replace(/^Because\s*/i, '').trim()
+        : 'Break the question into smaller steps and use clues from the prompt.';
+      return `Answer: ${question.answer}. ${base}`;
+    };
+
+    const createHintForQuestion = (question) => {
+      if (!question) return 'Look for important keywords and work step by step.';
+      const prompt = (question.prompt || '').toLowerCase();
+      if (/(\+|plus)/.test(prompt)) return 'Combine the parts being added and double check each place value.';
+      if (/(minus|−|subtract|-)/.test(prompt)) return 'Line up the values and subtract carefully from left to right.';
+      if (prompt.includes('main idea')) return 'Ask yourself which detail sums up the entire passage.';
+      if (prompt.includes('theme')) return 'Think about the lesson the author wants you to learn.';
+      if (prompt.includes('ratio') || prompt.includes('proportion')) return 'Compare matching parts and scale each side the same amount.';
+      if (prompt.includes('fraction')) return 'Use common denominators before adding or subtracting fractions.';
+      if (prompt.includes('context clue')) return 'Look for words before and after the vocab word that define or restate it.';
+      return question.explanation
+        ? `Focus on this idea: ${question.explanation}`
+        : 'Underline the important words and consider what they are asking you to find.';
+    };
+
+    const getAiSolution = async (question) => {
+      if (!question) return null;
+      const prompt = `You are Ollama 2, a step-by-step math teacher. Explain how to solve the problem below using 3-4 concise steps, ending with the final answer.\nProblem: ${question.prompt}\nCorrect answer: ${question.answer}\nSteps:`;
+      return callOllama(prompt);
+    };
+
+    const createAdaptiveVariant = (question, skillLevel = 0) => {
+      const baseLabel = question.prompt.replace('Try again:', '').trim();
+      const meta = question.meta || {};
+      if (meta.pattern === 'math-add') {
+        const step = Math.max(1, skillLevel + 3);
+        const a = (meta.base || 5) + Math.floor(Math.random() * step);
+        const b = (meta.grade || 4) + Math.floor(Math.random() * step);
+        const answer = a + b;
+        const distractors = shuffleArray([
+          answer + 2,
+          answer - 1,
+          answer + 4,
+          answer - 3
+        ].map(String));
+        const options = shuffleArray([String(answer), ...distractors]).slice(0, 4);
+        return {
+          prompt: `Try again: What is ${a} + ${b}?`,
+          options,
+          answer: String(answer),
+          explanation: question.explanation,
+          meta: { ...meta, base: a, grade: b },
+          retry: true
+        };
+      }
+
+      if (meta.pattern === 'math-sub') {
+        const step = Math.max(1, skillLevel + 3);
+        const minuend = (meta.base || 10) + Math.floor(Math.random() * step);
+        const subtrahend = Math.max(1, (meta.grade || 4) + Math.floor(Math.random() * step));
+        const adjustedSub = Math.min(minuend - 1, subtrahend);
+        const answer = minuend - adjustedSub;
+        const distractors = shuffleArray([
+          answer + 1,
+          answer - 2,
+          answer + 3,
+          adjustedSub
+        ].map(String));
+        const options = shuffleArray([String(answer), ...distractors]).slice(0, 4);
+        return {
+          prompt: `Try again: What is ${minuend} − ${adjustedSub}?`,
+          options,
+          answer: String(answer),
+          explanation: question.explanation,
+          meta: { ...meta, base: minuend, grade: adjustedSub },
+          retry: true
+        };
+      }
+
+      if (meta.pattern && meta.pattern.startsWith('reading')) {
+        return {
+          ...question,
+          prompt: `Try again: ${baseLabel}`,
+          options: shuffleArray(question.options.slice()),
+          retry: true
+        };
+      }
+
+      return {
+        ...question,
+        prompt: `Try again: ${baseLabel}`,
+        options: shuffleArray(question.options.slice()),
+        retry: true
+      };
+    };
+
+    const extractVideoId = (value = '') => {
+      const trimmed = value.trim();
+      if (!trimmed) return '';
+      if (trimmed.includes('youtube.com') || trimmed.includes('youtu.be')) {
+        const url = new URL(trimmed.includes('http') ? trimmed : `https://${trimmed}`);
+        if (url.hostname === 'youtu.be') {
+          return url.pathname.replace('/', '');
+        }
+        return url.searchParams.get('v') || trimmed;
+      }
+      return trimmed;
+    };
+
+    try {
+      const stored = JSON.parse(localStorage.getItem(resourceKey) || '[]');
+      resources = Array.isArray(stored) ? stored : [];
+    } catch (_) {
+      resources = [];
+    }
+
+    const saveResources = () => localStorage.setItem(resourceKey, JSON.stringify(resources));
+
+    const formatResources = () => {
+      resourceMap = new Map();
+      resources.forEach((item) => resourceMap.set(item.id, item));
+    };
+
+    const openModal = () => {
+      if (!playerModal) return;
+      playerModal.classList.remove('is-hidden');
+      document.body.classList.add('modal-open');
+    };
+
+    const closeModal = () => {
+      if (!playerModal) return;
+      playerModal.classList.add('is-hidden');
+      document.body.classList.remove('modal-open');
+      practiceSession = null;
+      if (needsRefreshAfterModal) {
+        maxUnlockedGrade = getUnlockedGrade();
+        renderResources();
+        needsRefreshAfterModal = false;
+      }
+    };
+
+    const clearHash = () => {
+      if (window.location.hash) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    };
+
+    const buildVideoSrc = (videoId = '') => {
+      if (!videoId) return '';
+      const cleanId = videoId.replace(/[^a-zA-Z0-9_\-]/g, '');
+      return `https://www.youtube-nocookie.com/embed/${cleanId}?rel=0&modestbranding=1&playsinline=1`;
+    };
+
+    const openVideoLesson = (resource) => {
+      if (!resource || !playerBody) return;
+      const src = buildVideoSrc(resource.videoId);
+      playerBody.innerHTML = `
+        <h3>${resource.title}</h3>
+        ${src ? `
+          <div class="video-wrapper">
+            <iframe
+              src="${src}"
+              title="${resource.title}"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+          </div>
+        ` : '<div class="mini-empty">No video available yet.</div>'}
+        <p>${resource.description || 'Review this lesson before practicing.'}</p>
+      `;
+      openModal();
+      clearHash();
+      window.learnHub?.history?.add?.({
+        type: 'Video',
+        title: resource.title,
+        subject: resource.subject,
+        meta: resource.unit
+      });
+    };
+
+    const ensureSolutionExplanation = async () => {
+      if (!practiceSession || !playerModal) return;
+      const { questions, index } = practiceSession;
+      const current = questions[index];
+      practiceSession.aiCache = practiceSession.aiCache || {};
+      const cacheKey = `solution-${index}`;
+      if (practiceSession.aiCache[cacheKey]) {
+        const stepsEl = playerModal.querySelector('[data-solution-steps]');
+        if (stepsEl) {
+          stepsEl.innerHTML = formatAiHtml(practiceSession.aiCache[cacheKey]);
+        }
+        return;
+      }
+      const stepsEl = playerModal.querySelector('[data-solution-steps]');
+      if (!stepsEl) return;
+      stepsEl.textContent = aiEndpoint ? 'Generating worked example...' : buildFriendlyExplanation(current);
+      const aiText = await getAiSolution(current);
+      practiceSession.aiCache[cacheKey] = aiText || buildFriendlyExplanation(current, true);
+      if (playerModal.contains(stepsEl)) {
+        stepsEl.innerHTML = formatAiHtml(practiceSession.aiCache[cacheKey]);
+      }
+    };
+
+    const renderPracticeCard = () => {
+      if (!practiceSession || !playerBody) return;
+      const { resource, questions, index, mode } = practiceSession;
+      const current = questions[index];
+      practiceSession.view = practiceSession.view || 'practice';
+      const view = practiceSession.view;
+      const stamp = new Date().toLocaleString();
+      const practiceLabel = mode === 'test' ? 'Quick Test' : 'Skill Practice';
+      const metaLine = `${resource.unit || 'Independent Practice'} • Grade ${resource.grade || userGrade}`;
+      const practiceTabs = `
+        <div class="toolbar-tabs" role="tablist">
+          <button type="button" class="toolbar-tab ${view === 'practice' ? 'is-active' : ''}" data-practice-tab="practice">Skill Practice</button>
+          <button type="button" class="toolbar-tab ${view === 'solution' ? 'is-active' : ''}" data-practice-tab="solution">Show Question</button>
+        </div>
+      `;
+      const solutionBlock = `
+        <div class="practice-solution">
+          <p class="solution-answer">Correct answer: <strong>${current.answer}</strong></p>
+          <div class="solution-steps" data-solution-steps>${aiEndpoint ? 'Generating worked example...' : buildFriendlyExplanation(current)}</div>
+        </div>
+      `;
+      playerBody.innerHTML = `
+        <div class="practice-card">
+          <div class="practice-toolbar">
+            <button type="button" class="ghost-button" data-close-player>&larr; Back</button>
+            ${practiceTabs}
+          </div>
+          <div class="practice-header">
+            <div>
+              <p class="practice-label">${resource.title}</p>
+              <p>${metaLine}</p>
+              <p>${stamp}</p>
+            </div>
+            <div class="practice-progress-pill">${practiceLabel} • Q${index + 1} of ${questions.length}</div>
+          </div>
+          <div class="practice-divider"></div>
+          <div class="practice-body">
+            <p class="practice-prompt">${current.prompt}</p>
+            ${view === 'practice' ? `
+              <div class="option-list">
+                ${current.options.map((option) => `<button type="button" data-option="${option}">${option}</button>`).join('')}
+              </div>
+            ` : solutionBlock}
+            <div class="practice-feedback" data-feedback></div>
+          </div>
+        </div>
+      `;
+      if (view === 'solution') {
+        ensureSolutionExplanation();
+      }
+    };
+
+    const finishPractice = () => {
+      if (!practiceSession || !playerBody) return;
+      const { questions, score, mode, resource } = practiceSession;
+      const rewardValue = mode === 'test' ? 40 : 20;
+      let rewardMessage = '';
+      if (progressApi?.addPoints) {
+        progressData = progressApi.addPoints(rewardValue, mode);
+        rewardMessage = `<p class="reward-message">+${rewardValue} points! Total: ${progressData.points}</p>`;
+        needsRefreshAfterModal = true;
+      }
+      playerBody.innerHTML = `
+        <div class="practice-summary">
+          <h3>${mode === 'test' ? 'Test complete!' : 'Great work!'}</h3>
+          <p>You scored ${score} / ${questions.length}.</p>
+          ${rewardMessage}
+          <button type="button" data-close-player>Close</button>
+        </div>
+      `;
+      window.learnHub?.history?.add?.({
+        type: mode === 'test' ? 'Test' : 'Practice',
+        title: resource.title,
+        subject: resource.subject,
+        meta: `${resource.unit} (${score}/${questions.length})`
+      });
+      practiceSession = null;
+    };
+
+    const startPracticeSession = (resource, mode = 'practice') => {
+      if (!resource || !playerBody) return;
+      const questionSet = getQuestionSetForMode(resource, mode);
+      if (!questionSet.length) {
+        playerBody.innerHTML = '<div class="mini-empty">No questions for this unit yet.</div>';
+        openModal();
+        return;
+      }
+      practiceSession = {
+        resource,
+        mode,
+        questions: questionSet,
+        index: 0,
+        score: 0,
+        answered: false,
+        skillLevel: 0,
+        view: 'practice',
+        aiCache: {}
+      };
+      openModal();
+      clearHash();
+      renderPracticeCard();
+    };
+
+    playerModal?.addEventListener('click', (event) => {
+      if (event.target === playerModal || event.target.matches('.modal-close') || event.target.matches('[data-close-player]')) {
+        closeModal();
+        return;
+      }
+
+      if (event.target.matches('[data-practice-tab]') && practiceSession) {
+        const nextView = event.target.getAttribute('data-practice-tab');
+        practiceSession.view = nextView;
+        renderPracticeCard();
+        return;
+      }
+
+      if (event.target.matches('[data-option]') && practiceSession) {
+        if (practiceSession.view !== 'practice' || practiceSession.answered) return;
+        const choice = event.target.getAttribute('data-option');
+        const current = practiceSession.questions[practiceSession.index];
+        const feedbackEl = playerModal.querySelector('[data-feedback]');
+        const buttons = playerModal.querySelectorAll('[data-option]');
+        buttons.forEach((btn) => {
+          if (btn.getAttribute('data-option') === current.answer) {
+            btn.classList.add('correct');
+          }
+        });
+        const isCorrect = choice === current.answer;
+        if (isCorrect) {
+          practiceSession.score += 1;
+          practiceSession.skillLevel = Math.min(practiceSession.skillLevel + 1, 5);
+          event.target.classList.add('correct');
+        } else {
+          practiceSession.skillLevel = Math.max(practiceSession.skillLevel - 1, -3);
+          event.target.classList.add('incorrect');
+          if ((current.retryCount || 0) < 2) {
+            const variant = createAdaptiveVariant(current, practiceSession.skillLevel);
+            if (variant) {
+              variant.retryCount = (current.retryCount || 0) + 1;
+              practiceSession.questions.splice(practiceSession.index + 2, 0, variant);
+            }
+          }
+        }
+        if (feedbackEl) {
+          feedbackEl.textContent = buildFriendlyExplanation(current, isCorrect);
+        }
+        practiceSession.answered = true;
+        const isLastQuestion = practiceSession.index === practiceSession.questions.length - 1;
+        if (!playerModal.querySelector('[data-next-question]')) {
+          const navButton = document.createElement('button');
+          navButton.type = 'button';
+          navButton.className = 'ghost-button';
+          navButton.dataset.nextQuestion = 'true';
+          navButton.textContent = isLastQuestion ? 'See results' : 'Next question';
+          playerModal.querySelector('.practice-body')?.appendChild(navButton);
+        }
+      }
+
+      if (event.target.matches('[data-next-question]') && practiceSession) {
+        practiceSession.index += 1;
+        practiceSession.answered = false;
+        practiceSession.view = 'practice';
+        if (practiceSession.index >= practiceSession.questions.length) {
+          finishPractice();
+        } else {
+          renderPracticeCard();
+        }
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !playerModal?.classList.contains('is-hidden')) {
+        closeModal();
+      }
+    });
+
+    const matchesFilter = (resource) => {
+      if (activeType === 'all') return true;
+      if (activeType === 'Video') return Boolean(resource.videoId);
+      if (activeType === 'Practice') return (resource.practice || []).length > 0;
+      if (activeType === 'Quiz' || activeType === 'Document') return (resource.test || []).length > 0;
+      return resource.type === activeType;
+    };
+
+    const renderResources = () => {
+      formatResources();
+      accordion.innerHTML = '';
+      let totalMatches = 0;
+
+      gradeLevels.forEach((grade) => {
+        const gradeResources = resources.filter((resource) => {
+          const gradeMatch = Number.parseInt(resource.grade, 10) === grade;
+          const isMath = (resource.subject || '').toLowerCase() === 'math';
+          return gradeMatch && isMath;
+        });
+        const gradeMatches = gradeResources.filter(matchesFilter);
+        totalMatches += gradeMatches.length;
+
+        if (grade > maxUnlockedGrade) {
+          const locked = document.createElement('article');
+          locked.className = 'grade-section locked';
+          const pointsNeeded = Math.max(0, (grade - userGrade) * 400 - (progressData.points || 0));
+          locked.innerHTML = `
+            <button class="grade-toggle" type="button" disabled>
+              <div>
+                <p class="grade-label">Grade ${grade}</p>
+                <span>Locked</span>
+              </div>
+              <i class="fas fa-lock"></i>
+            </button>
+            <div class="locked-panel">Earn ${pointsNeeded} more points to unlock this grade.</div>
+          `;
+          accordion.appendChild(locked);
+          return;
+        }
+
+        const section = document.createElement('article');
+        section.className = 'grade-section';
+        section.dataset.grade = grade;
+        section.innerHTML = `
+          <button class="grade-toggle" type="button" data-grade-toggle>
+            <div>
+              <p class="grade-label">Grade ${grade}</p>
+              <span>${gradeResources.length} study tools</span>
+            </div>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="grade-panel">
+            <div class="subject-columns"></div>
+          </div>
+        `;
+
+        const columnWrapper = section.querySelector('.subject-columns');
+        const subjects = ['Math'];
+
+        subjects.forEach((subject) => {
+          const column = document.createElement('div');
+          column.className = 'subject-column';
+          column.innerHTML = `<h4>${subject}</h4>`;
+          const matchingContent = gradeMatches.filter((resource) => resource.subject === subject);
+          if (!matchingContent.length) {
+            column.innerHTML += '<div class="mini-empty">No resources for this filter yet.</div>';
+          } else {
+            const unitGroups = matchingContent.reduce((map, resource) => {
+              const unitName = resource.unit || 'Independent Practice';
+              if (!map.has(unitName)) map.set(unitName, []);
+              map.get(unitName).push(resource);
+              return map;
+            }, new Map());
+
+            unitGroups.forEach((list, unitName) => {
+              const unitBlock = document.createElement('div');
+              unitBlock.className = 'unit-block';
+              unitBlock.innerHTML = `<p class="unit-title">${unitName}</p>`;
+              list.forEach((resource) => {
+                const showVideo = Boolean(resource.videoId) && (activeType === 'all' || activeType === 'Lesson' || activeType === 'Video');
+                const showPractice = (resource.practice || []).length && (activeType === 'all' || activeType === 'Practice');
+                const showTest = (resource.test || []).length && (activeType === 'all' || activeType === 'Quiz' || activeType === 'Document' || activeType === 'Practice');
+                const actions = [];
+                if (showVideo) {
+                  actions.push(`<button class="link-button" data-watch="${resource.id}">Watch</button>`);
+                }
+                if (showPractice) {
+                  actions.push(`<button class="ghost-button" data-session-mode="practice" data-session-resource="${resource.id}">Practice</button>`);
+                }
+                if (showTest) {
+                  actions.push(`<button class="ghost-button" data-session-mode="test" data-session-resource="${resource.id}">Quick Test</button>`);
+                }
+
+                const badgeLabel = activeType === 'all' ? resource.type : activeType;
+                const card = document.createElement('article');
+                card.className = 'resource-card compact';
+                card.innerHTML = `
+                  <div class="badge" style="background-color:#eef2ff;color:#4c5dd4;margin-bottom:12px;">${badgeLabel}</div>
+                  <h4>${resource.title}</h4>
+                  <p class="resource-meta">Grade ${resource.grade}</p>
+                  <p>${resource.description}</p>
+                  <div class="resource-actions">
+                    ${actions.join('')}
+                  </div>
+                `;
+                unitBlock.appendChild(card);
+              });
+              column.appendChild(unitBlock);
+            });
+          }
+          columnWrapper.appendChild(column);
+        });
+
+        accordion.appendChild(section);
+      });
+
+      if (!totalMatches) {
+        accordion.hidden = true;
+        resourceEmpty.hidden = false;
+      } else {
+        accordion.hidden = false;
+        resourceEmpty.hidden = true;
+        const sections = Array.from(accordion.querySelectorAll('.grade-section'));
+        const firstPopulated = sections.find((section) => section.querySelector('.resource-card')) || sections[0];
+        if (firstPopulated) firstPopulated.classList.add('open');
+      }
+      openFromHash();
+    };
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        filterButtons.forEach((btn) => btn.classList.remove('active'));
+        button.classList.add('active');
+        activeType = button.dataset.type;
+        renderResources();
+      });
+    });
+
+    const buildCustomQuestions = (prompt, answer) => {
+      const filler = ['I need more info', `${answer}?`, `${answer}?!`];
+      const makeOptions = () => Array.from(new Set([answer, ...filler])).slice(0, 4);
+      return [
+        { prompt, options: makeOptions(), answer },
+        { prompt: `${prompt} (apply it)`, options: makeOptions(), answer }
+      ];
+    };
+
+    document.getElementById('addResourceBtn').addEventListener('click', () => {
+      const title = prompt('Resource title');
+      if (!title) return;
+      const subject = prompt('Subject (Math or Reading)', 'Math') || 'General';
+      const unit = prompt('Unit title (e.g., Unit 5: Fractions)', 'Independent Practice');
+      const grade = prompt('Grade level', '10');
+      const description = prompt('Short description') || 'New learning resource';
+      const videoInput = prompt('Video link or YouTube ID', 'HWxFN7KSM2E');
+      const practicePrompt = prompt('Practice question prompt', `Practice for ${title}`) || `Practice for ${title}`;
+      const practiceAnswer = prompt('Correct answer for practice question', 'Answer A') || 'Answer A';
+      const testPrompt = prompt('Test question prompt', `Exit ticket for ${title}`) || `Exit ticket for ${title}`;
+      const testAnswer = prompt('Correct answer for test question', practiceAnswer) || practiceAnswer;
+
+      resources.unshift({
+        id: `resource-${Date.now()}`,
+        title,
+        type: 'Lesson',
+        subject: subject.trim() || 'General',
+        unit: (unit || 'Independent Practice').trim(),
+        grade: (grade || 'N/A').trim(),
+        description,
+        videoId: extractVideoId(videoInput || ''),
+        practice: buildCustomQuestions(practicePrompt, practiceAnswer),
+        test: buildCustomQuestions(testPrompt, testAnswer)
+      });
+
+      saveResources();
+      renderResources();
+    });
+
+    accordion.addEventListener('click', (event) => {
+      const toggle = event.target.closest('[data-grade-toggle]');
+      if (toggle) {
+        toggle.closest('.grade-section').classList.toggle('open');
+        return;
+      }
+
+      const watchBtn = event.target.closest('[data-watch]');
+      if (watchBtn) {
+        const resource = resourceMap.get(watchBtn.getAttribute('data-watch'));
+        openVideoLesson(resource);
+        return;
+      }
+
+      const sessionBtn = event.target.closest('[data-session-mode]');
+      if (sessionBtn) {
+        const resource = resourceMap.get(sessionBtn.getAttribute('data-session-resource'));
+        const mode = sessionBtn.getAttribute('data-session-mode');
+        startPracticeSession(resource, mode);
+      }
+    });
+
+    const openFromHash = () => {
+      if (!window.location.hash) return;
+      const params = new URLSearchParams(window.location.hash.replace('#', ''));
+      const resourceId = params.get('resource');
+      const mode = params.get('mode') || 'practice';
+      if (!resourceId || !resourceMap.has(resourceId)) return;
+      if (mode === 'video') {
+        openVideoLesson(resourceMap.get(resourceId));
+      } else {
+        startPracticeSession(resourceMap.get(resourceId), mode);
+      }
+    };
+
+    window.addEventListener('hashchange', openFromHash);
+
+    renderResources();
+  </script>
+</body>
+</html>

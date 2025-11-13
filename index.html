@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnHub</title>
+  <link rel="stylesheet" href="style.css?v=20241113">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/learnhub-logo.svg" alt="LearnHub logo">
+    </div>
+    <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
+    <div class="nav-links">
+      <a class="active" href="index.html">Home</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="groups.html">Groups</a>
+      <a href="resources.html">Resources</a>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h2>Welcome to LearnHub</h2>
+    <p>A peer-to-peer learning platform created by students, for students. Connect, collaborate, and excel together.</p>
+    <div class="cards">
+      <div class="card card-blue">
+        <div class="icon"><i class="far fa-calendar-alt"></i></div>
+        <h3>Live Tutoring</h3>
+        <p>Join scheduled tutoring sessions and group study opportunities</p>
+        <a class="button" href="schedule.html">View Schedule<i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="card card-green">
+        <div class="icon"><i class="fas fa-chart-line"></i></div>
+        <h3>Track Progress</h3>
+        <p>Monitor your learning journey and completed activities</p>
+        <a class="button" href="dashboard.html">View Dashboard<i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="card card-orange">
+        <div class="icon"><i class="fas fa-people-arrows"></i></div>
+        <h3>Learn Together</h3>
+        <p>Access interactive resources and study materials</p>
+        <a class="button" href="resources.html">Explore Resources<i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="xp-panel">
+    <div class="xp-panel-inner">
+      <div class="xp-summary-card">
+        <div class="xp-summary-header">
+          <div>
+            <p class="eyebrow">Your XP</p>
+            <h3 data-home-xp-total>0 XP</h3>
+          </div>
+        <span class="level-chip" data-home-level>Level 1</span>
+      </div>
+      <div class="xp-progress-track">
+        <span data-home-xp-progress style="width:0%"></span>
+      </div>
+      <p class="xp-progress-label" data-home-xp-label>0 / 100 XP until the next reward</p>
+        <div class="xp-rewards">
+          <div>
+            <p class="eyebrow">Next Reward</p>
+            <strong data-home-next-reward>Unlock a badge at 100 XP</strong>
+          </div>
+          <div class="home-streak-pill">
+            <span data-home-streak-fire>🔥0</span>
+            <p data-home-streak-text>Start your streak today</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="app.js?v=20241113"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const progressApi = window.learnHub?.progress;
+      if (!progressApi) return;
+      const levelSize = 100;
+      const xpTotalEl = document.querySelector('[data-home-xp-total]');
+      const xpLevelEl = document.querySelector('[data-home-level]');
+      const xpProgressEl = document.querySelector('[data-home-xp-progress]');
+      const xpLabelEl = document.querySelector('[data-home-xp-label]');
+      const rewardEl = document.querySelector('[data-home-next-reward]');
+      const streakFireEl = document.querySelector('[data-home-streak-fire]');
+      const streakTextEl = document.querySelector('[data-home-streak-text]');
+      const render = () => {
+        const progress = progressApi.get?.() || {};
+        const points = progress.points || 0;
+        const levelIndex = Math.floor(points / levelSize);
+        const levelBase = levelIndex * levelSize;
+        const nextLevel = levelBase + levelSize;
+        const progressWithin = points - levelBase;
+        const percent = Math.min(100, Math.max(0, (progressWithin / levelSize) * 100));
+        const streakGoal = 7;
+        const streak = progress.streakCount || 0;
+        if (xpTotalEl) xpTotalEl.textContent = `${points} XP`;
+        if (xpLevelEl) xpLevelEl.textContent = `Level ${levelIndex + 1}`;
+        if (xpProgressEl) xpProgressEl.style.width = `${percent}%`;
+        if (xpLabelEl) xpLabelEl.textContent = `${progressWithin}/${levelSize} XP until Level ${levelIndex + 2}`;
+        if (rewardEl) rewardEl.textContent = `Next reward at ${nextLevel} XP`;
+        if (streakFireEl) streakFireEl.textContent = `🔥${streak}`;
+        if (streakTextEl) {
+          const remaining = Math.max(0, streakGoal - streak);
+          streakTextEl.textContent = streak
+            ? remaining > 0
+              ? `${streak}-day streak • ${remaining} days to the goal`
+              : `${streak}-day streak • Goal complete!`
+            : 'Complete an activity to light the streak.';
+        }
+      };
+      render();
+    });
+  </script>
+</body>
+</html>

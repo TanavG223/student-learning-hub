@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnHub – Groups</title>
+  <link rel="stylesheet" href="style.css?v=20241113">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/learnhub-logo.svg" alt="LearnHub logo">
+    </div>
+    <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a class="active" href="groups.html">Groups</a>
+      <a href="resources.html">Resources</a>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+    </div>
+  </nav>
+
+  <main class="page-container groups-page">
+    <div class="page-header">
+      <div class="page-title-group">
+        <h2>Group Collaboration</h2>
+        <p>Share invite codes with classmates to combine your points and unlock more rewards.</p>
+      </div>
+      <span class="badge-pill" data-team-pill>Loading…</span>
+    </div>
+
+    <section class="card-panel group-status-card">
+      <div class="group-status-text">
+        <h3 class="section-heading">Your Group Status</h3>
+        <p data-group-status>Checking your current team…</p>
+        <div class="code-display" data-active-code hidden></div>
+        <p class="group-summary" data-group-summary hidden></p>
+      </div>
+      <div class="group-feedback" data-groups-feedback hidden></div>
+    </section>
+
+    <section class="card-panel group-actions-grid">
+      <div class="group-panel create-panel">
+        <h4>Create an Invite Code</h4>
+        <p>Instantly generate a classroom code that others can use to join your team.</p>
+        <button type="button" class="cta-button" data-groups-create>
+          <i class="fas fa-qrcode"></i>
+          Generate Code
+        </button>
+        <small>Already have a team? Creating a new code will move you to a fresh group.</small>
+      </div>
+      <div class="group-panel join-panel">
+        <h4>Join with a Code</h4>
+        <p>Entering a code connects your points to the same leaderboard.</p>
+        <form id="joinGroupForm" class="group-form">
+          <label for="joinCodeInput">Invite code</label>
+          <input id="joinCodeInput" data-groups-code-input type="text" maxlength="8" placeholder="ABC123" required>
+          <button type="submit">Join Group</button>
+        </form>
+        <small>Ask a friend or teacher to share their 6-character code.</small>
+      </div>
+    </section>
+
+    <section class="card-panel">
+      <h3 class="section-heading">How group tokens work</h3>
+      <ul class="group-list">
+        <li>Complete lessons, practice sets, or tutoring sessions to earn personal tokens.</li>
+        <li>Create a code and share it with classmates to start a collaborative team.</li>
+        <li>Every time someone on the team earns points, the group total increases.</li>
+        <li>Use the dashboard to see your classroom progress and unlock new challenges together.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="app.js?v=20241113"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const progressApi = window.learnHub?.progress;
+      if (!progressApi) return;
+
+      const teamPillEl = document.querySelector('[data-team-pill]');
+      const statusEl = document.querySelector('[data-group-status]');
+      const codeEl = document.querySelector('[data-active-code]');
+      const summaryEl = document.querySelector('[data-group-summary]');
+      const createBtn = document.querySelector('[data-groups-create]');
+      const joinForm = document.getElementById('joinGroupForm');
+      const codeInput = document.querySelector('[data-groups-code-input]');
+      const feedbackEl = document.querySelector('[data-groups-feedback]');
+
+      const setFeedback = (message = '', isError = false) => {
+        if (!feedbackEl) return;
+        feedbackEl.textContent = message;
+        feedbackEl.hidden = !message;
+        feedbackEl.classList.toggle('is-error', Boolean(isError));
+      };
+
+      const renderState = () => {
+        setFeedback('');
+        const progress = progressApi?.get?.() || {};
+        const teamCode = progressApi?.teamCode?.() || progress.teamCode || null;
+        const hasTeam = Boolean(teamCode);
+        const teamPoints = hasTeam ? progressApi?.teamPoints?.(teamCode) || 0 : progress.groupPoints || 0;
+
+        if (teamPillEl) {
+          teamPillEl.textContent = hasTeam ? `Team ${teamCode}` : 'Not in a group yet';
+        }
+
+        if (statusEl) {
+          statusEl.textContent = hasTeam
+            ? 'You are actively sharing points with your classroom team.'
+            : 'Not connected to a team yet. Create a new code or join one below.';
+        }
+
+        if (codeEl) {
+          codeEl.hidden = !hasTeam;
+          if (hasTeam) {
+            codeEl.textContent = `Invite code: ${teamCode}`;
+          }
+        }
+
+        if (summaryEl) {
+          summaryEl.hidden = false;
+          summaryEl.textContent = hasTeam
+            ? `Team token total: ${teamPoints}`
+            : `Personal tokens ready to contribute: ${teamPoints}`;
+        }
+      };
+
+      createBtn?.addEventListener('click', () => {
+        if (!progressApi?.createTeam) {
+          setFeedback('Group tools are unavailable right now. Try refreshing the page.', true);
+          return;
+        }
+        const currentCode = progressApi?.teamCode?.();
+        if (currentCode) {
+          const confirmed = window.confirm(`You are already on team ${currentCode}. Creating a new code will move you to a new team. Continue?`);
+          if (!confirmed) return;
+        }
+        const code = progressApi.createTeam();
+        setFeedback(`Invite code created! Share this with classmates: ${code}`);
+        renderState();
+      });
+
+      joinForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const inputValue = codeInput?.value?.trim();
+        if (!inputValue) {
+          setFeedback('Please enter an invite code to join.', true);
+          return;
+        }
+        if (!progressApi?.joinTeam) {
+          setFeedback('Group tools are unavailable right now. Try refreshing the page.', true);
+          return;
+        }
+        const currentCode = progressApi?.teamCode?.();
+        if (currentCode) {
+          const confirmed = window.confirm(`You are already on team ${currentCode}. Joining another code will move you to a new team. Continue?`);
+          if (!confirmed) return;
+        }
+        const joined = progressApi.joinTeam(inputValue);
+        if (!joined) {
+          setFeedback('Code not found. Double-check the letters and numbers.', true);
+          return;
+        }
+        codeInput.value = '';
+        setFeedback(`Success! You joined team ${joined}.`);
+        renderState();
+      });
+
+      renderState();
+    });
+  </script>
+</body>
+</html>

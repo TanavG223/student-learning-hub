@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnHub – Dashboard</title>
+  <link rel="stylesheet" href="style.css?v=20241113">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/learnhub-logo.svg" alt="LearnHub logo">
+    </div>
+    <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="schedule.html">Schedule</a>
+      <a class="active" href="dashboard.html">Dashboard</a>
+      <a href="groups.html">Groups</a>
+      <a href="resources.html">Resources</a>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+    </div>
+  </nav>
+
+  <main class="page-container">
+    <div class="page-header">
+      <div class="page-title-group">
+        <h2>Your Learning Dashboard</h2>
+        <p>Track your progress and manage your learning activities</p>
+      </div>
+      <button class="cta-button" id="addActivityBtn"><i class="fas fa-plus"></i> Add Activity</button>
+    </div>
+
+    <section class="stats-grid">
+      <article class="stat-card">
+        <div class="stat-label">Total Activities</div>
+        <div class="stat-value" data-stat-total>0</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Completed</div>
+        <div class="stat-value" data-stat-completed>0</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">In Progress</div>
+        <div class="stat-value" data-stat-progress>0</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Completion Rate</div>
+        <div class="stat-value" data-stat-rate>0%</div>
+      </article>
+    </section>
+    <section class="reward-grid">
+      <article class="reward-card" data-points-card>
+        <div class="reward-card-header">
+          <h4>XP & Rewards</h4>
+          <span class="level-chip" data-dashboard-level>Level 1</span>
+        </div>
+        <p data-points-text>Earn points by finishing practice and tests.</p>
+        <div class="xp-progress-track">
+          <span data-points-progress style="width:0%"></span>
+        </div>
+        <p class="xp-progress-label" data-points-progress-label>0 / 100 XP to next level</p>
+        <div class="badge-list" data-badge-list></div>
+        <p class="xp-reward-note" data-points-reward>Next reward at 100 XP</p>
+      </article>
+      <article class="reward-card hidden" data-group-card>
+        <h4 data-group-title>Your Tokens</h4>
+        <p data-group-text>Earn tokens by practicing daily.</p>
+        <div class="progress-bar"><span data-group-progress style="width:0%"></span></div>
+        <div class="group-actions" data-group-actions>
+          <button type="button" data-create-team>Create Share Code</button>
+          <div class="join-form">
+            <input type="text" data-team-code-input placeholder="Enter code to join">
+            <button type="button" data-join-team>Join Group</button>
+          </div>
+          <p class="group-code" data-team-code-output hidden></p>
+        </div>
+      </article>
+      <article class="reward-card" data-streak-card>
+        <div class="streak-header">
+          <div class="streak-icon" data-streak-fire>🔥0</div>
+          <div>
+            <h4>Daily Streak</h4>
+            <p data-streak-text>Keep your daily progress streak alive.</p>
+          </div>
+        </div>
+        <div class="xp-progress-track streak-track">
+          <span data-streak-progress style="width:0%"></span>
+        </div>
+        <p class="xp-progress-label" data-streak-goal>Goal: 7 days</p>
+      </article>
+    </section>
+
+    <section class="card-panel learning-activities">
+      <div class="filters-bar">
+        <h3 class="section-heading">Learning Activities</h3>
+        <span class="badge" id="activityCount">0</span>
+      </div>
+      <div class="activity-list" data-activity-list></div>
+      <div class="empty-state" data-activity-empty>
+        <div class="empty-icon"><i class="far fa-circle"></i></div>
+        <h3>No activities yet</h3>
+        <p>Start exploring resources to add learning activities</p>
+      </div>
+    </section>
+    <section class="card-panel question-card">
+      <h3 class="section-heading">Have a question?</h3>
+      <p class="modal-subtitle">Tell us what you need help with and we will recommend lessons, videos, and practice sets.</p>
+      <form class="question-form" id="questionForm">
+        <input id="questionInput" name="questionInput" type="text" placeholder="Ex: How do I factor quadratics?" required>
+        <button type="submit">Get Suggestions</button>
+      </form>
+      <div class="question-results" data-question-results>
+        <div class="mini-empty">Ask a question to see personalized suggestions.</div>
+      </div>
+    </section>
+  </main>
+  <div class="modal-backdrop is-hidden" id="activityModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="modal-close" type="button" aria-label="Close modal">&times;</button>
+      <h3>Add Activity</h3>
+      <p class="modal-subtitle">Your recent practice and tutoring history appear here.</p>
+      <div class="suggestion-list" data-suggestion-list></div>
+      <form class="activity-form" id="activityForm">
+        <label for="activityTitle">Activity title</label>
+        <input id="activityTitle" name="activityTitle" type="text" placeholder="Ex: DeltaMath – Quadratics Set" required>
+        <label for="activityMeta">Notes or progress update</label>
+        <textarea id="activityMeta" name="activityMeta" rows="3" placeholder="Add a quick note"></textarea>
+        <button type="submit">Save Activity</button>
+      </form>
+    </div>
+  </div>
+  <script src="app.js?v=20241113"></script>
+  <script>
+    const sessionKey = 'learnhubSessions';
+    const resourceKey = 'learnhubResources';
+    const activityKey = 'learnhubActivities';
+
+    const sessionData = JSON.parse(localStorage.getItem(sessionKey) || '[]');
+    let resourceData = window.learnHub?.resources?.all?.() || JSON.parse(localStorage.getItem(resourceKey) || '[]');
+    resourceData = resourceData.filter((resource) => (resource.subject || '').toLowerCase() === 'math');
+    let customActivities = JSON.parse(localStorage.getItem(activityKey) || '[]');
+    customActivities = customActivities.map((activity) => ({
+      ...activity,
+      status: activity.status || 'In Progress',
+      source: 'custom'
+    }));
+
+    const statTotalEl = document.querySelector('[data-stat-total]');
+    const statCompletedEl = document.querySelector('[data-stat-completed]');
+    const statProgressEl = document.querySelector('[data-stat-progress]');
+    const statRateEl = document.querySelector('[data-stat-rate]');
+    const activityListEl = document.querySelector('[data-activity-list]');
+    const activityEmptyEl = document.querySelector('[data-activity-empty]');
+    const activityBadgeEl = document.getElementById('activityCount');
+    const modal = document.getElementById('activityModal');
+    const modalCloseBtn = modal.querySelector('.modal-close');
+    const suggestionListEl = document.querySelector('[data-suggestion-list]');
+    const activityForm = document.getElementById('activityForm');
+    const questionForm = document.getElementById('questionForm');
+    const questionResultsEl = document.querySelector('[data-question-results]');
+    const aiConfig = window.learnHub?.ai || {};
+    const rawAiEndpoint = aiConfig.endpoint || '';
+    const aiEndpoint = (window.location.protocol === 'https:' && rawAiEndpoint.startsWith('http://')) ? '' : rawAiEndpoint;
+    const aiModel = aiConfig.model || 'llama2';
+    const askAiTutor = async (prompt) => {
+      if (!aiEndpoint || typeof fetch === 'undefined') return null;
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const response = await fetch(aiEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: aiModel, prompt, stream: false }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (!response.ok) throw new Error(`Status ${response.status}`);
+        const data = await response.json();
+        return data.response?.trim() || null;
+      } catch (error) {
+        console.warn('AI tutor unavailable', error);
+        return null;
+      }
+    };
+    const formatAiHtml = (text = '') => text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .join('<br>');
+    const normalizeText = (text = '') => text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+    const detectGradeHint = (query) => {
+      const match = query.match(/grade\s*(\d{1,2})/i) || query.match(/(\d{1,2})(st|nd|rd|th)\s*grade?/i) || query.match(/\b(\d{1,2})\b(?=\s*(?:math|reading))/i);
+      if (!match) return null;
+      const value = parseInt(match[1], 10);
+      return Number.isNaN(value) ? null : Math.min(12, Math.max(1, value));
+    };
+    const detectSubjectHint = (query) => {
+      const lower = query.toLowerCase();
+      const mathSignals = ['math', 'algebra', 'geometry', 'calculus', 'equation', 'quadratic', 'log', 'trig', 'ratio', 'fraction'];
+      const readingSignals = ['reading', 'ela', 'english', 'literature', 'poem', 'essay', 'theme', 'argument'];
+      if (mathSignals.some((word) => lower.includes(word))) return 'math';
+      if (readingSignals.some((word) => lower.includes(word))) return 'reading';
+      return null;
+    };
+    const approxIncludes = (haystack, token) => {
+      if (!token) return false;
+      if (haystack.includes(token)) return true;
+      if (token.length > 5 && haystack.includes(token.slice(0, token.length - 1))) return true;
+      if (token.length > 5 && haystack.includes(token.slice(0, token.length - 2))) return true;
+      return false;
+    };
+
+    const progressApi = window.learnHub?.progress;
+    let progressData = progressApi?.get?.() || {};
+    const userProfile = window.learnHub?.user || {};
+    const userGrade = Number(userProfile.grade) || Number(progressData.grade) || 1;
+    const isYounger = userGrade <= 5;
+    const pointsTextEl = document.querySelector('[data-points-text]');
+    const badgeListEl = document.querySelector('[data-badge-list]');
+    const groupCardEl = document.querySelector('[data-group-card]');
+    const groupTitleEl = document.querySelector('[data-group-title]');
+    const groupTextEl = document.querySelector('[data-group-text]');
+    const groupProgressEl = document.querySelector('[data-group-progress]');
+    const groupActionsEl = document.querySelector('[data-group-actions]');
+    const teamCodeInput = document.querySelector('[data-team-code-input]');
+    const joinTeamBtn = document.querySelector('[data-join-team]');
+    const createTeamBtn = document.querySelector('[data-create-team]');
+    const teamCodeOutput = document.querySelector('[data-team-code-output]');
+    const streakCardEl = document.querySelector('[data-streak-card]');
+    const streakTextEl = document.querySelector('[data-streak-text]');
+    const streakProgressEl = document.querySelector('[data-streak-progress]');
+    const streakGoalEl = document.querySelector('[data-streak-goal]');
+    const streakFireEl = document.querySelector('[data-streak-fire]');
+    const pointsProgressEl = document.querySelector('[data-points-progress]');
+    const pointsProgressLabelEl = document.querySelector('[data-points-progress-label]');
+    const pointsRewardEl = document.querySelector('[data-points-reward]');
+    const dashboardLevelEl = document.querySelector('[data-dashboard-level]');
+    
+    const saveActivities = () => localStorage.setItem(activityKey, JSON.stringify(customActivities));
+
+    const renderProgressWidgets = () => {
+      progressData = progressApi?.get?.() || progressData;
+      const points = progressData.points || 0;
+      const levelSize = 100;
+      const levelIndex = Math.floor(points / levelSize);
+      const levelBase = levelIndex * levelSize;
+      const progressWithin = points - levelBase;
+      const nextLevel = levelBase + levelSize;
+      const percentToNext = Math.min(100, Math.max(0, (progressWithin / levelSize) * 100));
+      const badges = progressData.badges || [];
+      if (pointsTextEl) {
+        pointsTextEl.textContent = `${points} pts • Next badge at ${points < 100 ? 100 : 100 * Math.ceil(points / 100 + 1)} pts`;
+      }
+      if (pointsProgressEl) {
+        pointsProgressEl.style.width = `${percentToNext}%`;
+      }
+      if (pointsProgressLabelEl) {
+        pointsProgressLabelEl.textContent = `${progressWithin}/${levelSize} XP to reach Level ${levelIndex + 2}`;
+      }
+      if (pointsRewardEl) {
+        pointsRewardEl.textContent = `Next reward at ${nextLevel} XP`;
+      }
+      if (dashboardLevelEl) {
+        dashboardLevelEl.textContent = `Level ${levelIndex + 1}`;
+      }
+      if (badgeListEl) {
+        badgeListEl.innerHTML = badges.length
+          ? badges.map((value) => `<span class="badge-pill">${value} pts</span>`).join('')
+          : '<span class="mini-empty" style="padding:0;">Earn 100 pts for your first badge.</span>';
+      }
+      if (groupCardEl) {
+        const teamCode = progressData.teamCode || progressApi?.teamCode?.();
+        const hasTeam = Boolean(teamCode);
+        if (!isYounger || !hasTeam) {
+          groupCardEl.classList.add('hidden');
+        } else {
+          groupCardEl.classList.remove('hidden');
+          const goal = 500;
+          const displayValue = progressApi?.teamPoints?.(teamCode) || 0;
+          const width = Math.min(100, (displayValue / goal) * 100);
+          if (groupProgressEl) {
+            groupProgressEl.style.width = `${width}%`;
+          }
+          if (groupTitleEl) groupTitleEl.textContent = 'Group Tokens';
+          if (groupTextEl) groupTextEl.textContent = `Team ${teamCode} • ${displayValue} / ${goal} classroom tokens`;
+          if (teamCodeOutput) {
+            teamCodeOutput.hidden = false;
+            teamCodeOutput.textContent = `Share this code with classmates: ${teamCode}`;
+          }
+          if (groupActionsEl) groupActionsEl.hidden = true;
+        }
+      }
+      if (streakCardEl) {
+        streakCardEl.classList.remove('hidden');
+        const streakGoal = 7;
+        const streak = progressData.streakCount || 0;
+        const streakPercent = Math.min(100, (Math.min(streak, streakGoal) / streakGoal) * 100);
+        const remaining = Math.max(0, streakGoal - streak);
+        if (streakProgressEl) {
+          streakProgressEl.style.width = `${streakPercent}%`;
+        }
+        if (streakGoalEl) {
+          streakGoalEl.textContent = `Goal: ${streakGoal}-day streak`;
+        }
+        if (streakFireEl) {
+          streakFireEl.textContent = `🔥${streak}`;
+        }
+        if (streakTextEl) {
+          streakTextEl.textContent = streak
+            ? `${streak}-day streak • ${remaining ? `${remaining} days to go` : 'Goal complete!' }`
+            : 'Complete an activity to start your streak.';
+        }
+      }
+    };
+
+    const appendActivity = (title, meta) => {
+      if (!title) return;
+      const newItem = {
+        id: `custom-${Date.now()}`,
+        title,
+        meta: meta || 'No notes yet',
+        status: 'In Progress',
+        source: 'custom'
+      };
+      customActivities.unshift(newItem);
+      saveActivities();
+      buildActivityFeed();
+    };
+
+    const getHistoryItems = () => {
+      const history = window.learnHub?.history?.all?.();
+      if (!history || !Array.isArray(history)) return [];
+      return history;
+    };
+
+    renderProgressWidgets();
+    createTeamBtn?.addEventListener('click', () => {
+      if (!progressApi?.createTeam) return;
+      const code = progressApi.createTeam();
+      if (teamCodeOutput) {
+        teamCodeOutput.hidden = false;
+        teamCodeOutput.textContent = `Share this code with classmates: ${code}`;
+      }
+      renderProgressWidgets();
+    });
+
+    joinTeamBtn?.addEventListener('click', () => {
+      if (!progressApi?.joinTeam) return;
+      const code = teamCodeInput?.value?.trim();
+      if (!code) {
+        alert('Enter a team code to join.');
+        return;
+      }
+      const joined = progressApi.joinTeam(code);
+      if (!joined) {
+        alert('Team code not found. Double-check with your classmate.');
+        return;
+      }
+      teamCodeInput.value = '';
+      if (teamCodeOutput) {
+        teamCodeOutput.hidden = false;
+        teamCodeOutput.textContent = `Joined team ${joined}. Share this code with others!`;
+      }
+      renderProgressWidgets();
+    });
+
+    const renderSuggestions = () => {
+      const recent = getHistoryItems();
+      suggestionListEl.innerHTML = '';
+      if (!recent.length) {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'mini-empty';
+        placeholder.textContent = 'Open a resource or log a tutoring session to see quick-add suggestions.';
+        suggestionListEl.appendChild(placeholder);
+        return;
+      }
+
+      recent.slice(0, 6).forEach((entry) => {
+        const card = document.createElement('div');
+        card.className = 'suggestion-card';
+        const subtitle = `${entry.subject || 'General'} • ${entry.meta || entry.type || 'Activity'}`;
+        card.innerHTML = `
+          <div>
+            <h4>${entry.title}</h4>
+            <span>${subtitle}</span>
+          </div>
+          <button data-add-suggestion data-title="${entry.title}" data-meta="${subtitle}">Add</button>
+        `;
+        suggestionListEl.appendChild(card);
+      });
+    };
+
+    const openModal = () => {
+      renderSuggestions();
+      modal.classList.remove('is-hidden');
+      document.body.classList.add('modal-open');
+      activityForm.elements.activityTitle.focus();
+    };
+
+    const closeModal = () => {
+      modal.classList.add('is-hidden');
+      document.body.classList.remove('modal-open');
+      activityForm.reset();
+    };
+
+    const getHistoryActivities = () => {
+      const history = window.learnHub?.history?.all?.() || [];
+      return history.slice(0, 10).map((entry, index) => ({
+        id: entry.timestamp ? `history-${entry.timestamp}` : `history-${index}`,
+        title: entry.title,
+        meta: `${entry.subject || 'General'} • ${entry.meta || entry.type || 'Activity'}`,
+        status: entry.type || 'Logged',
+        source: 'history'
+      }));
+    };
+
+    const buildActivityFeed = () => {
+      const autoActivities = getHistoryActivities();
+      const combined = [...autoActivities, ...customActivities];
+
+      const totalTracked = combined.length;
+      const completed = customActivities.filter((item) => item.status === 'Completed').length;
+      const inProgress = Math.max(totalTracked - completed, 0);
+      const completionRate = totalTracked ? Math.round((completed / totalTracked) * 100) : 0;
+
+      statTotalEl.textContent = totalTracked;
+      statCompletedEl.textContent = completed;
+      statProgressEl.textContent = inProgress;
+      statRateEl.textContent = `${completionRate}%`;
+      activityBadgeEl.textContent = `${autoActivities.length} auto • ${customActivities.length} custom`;
+
+      activityListEl.innerHTML = '';
+      if (!combined.length) {
+        activityListEl.hidden = true;
+        activityEmptyEl.hidden = false;
+        return;
+      }
+
+      activityListEl.hidden = false;
+      activityEmptyEl.hidden = true;
+
+      combined.slice(0, 8).forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'activity-item';
+        row.innerHTML = `
+          <div>
+            <h4>${item.title}</h4>
+            <span>${item.meta}</span>
+          </div>
+          <div class="activity-actions">
+            ${item.source === 'custom' ? `<button data-complete-id="${item.id}">${item.status === 'Completed' ? 'Undo' : 'Complete'}</button>` : `<span>${item.status}</span>`}
+          </div>
+        `;
+        activityListEl.appendChild(row);
+      });
+
+      renderProgressWidgets();
+    };
+
+    document.getElementById('addActivityBtn').addEventListener('click', openModal);
+
+    modalCloseBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !modal.classList.contains('is-hidden')) {
+        closeModal();
+      }
+    });
+
+    suggestionListEl.addEventListener('click', (event) => {
+      if (event.target.matches('[data-add-suggestion]')) {
+        const { title, meta } = event.target.dataset;
+        appendActivity(title, meta);
+        closeModal();
+      }
+    });
+
+    activityForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const titleField = activityForm.elements.activityTitle;
+      const metaField = activityForm.elements.activityMeta;
+      const title = titleField.value.trim();
+      const meta = metaField.value.trim();
+      appendActivity(title, meta);
+      closeModal();
+    });
+
+    const scoreResourcesForQuery = (query) => {
+      const normalizedQuery = normalizeText(query);
+      if (!normalizedQuery) return [];
+      const tokens = normalizedQuery.split(' ').filter(Boolean);
+      const gradeHint = detectGradeHint(query);
+      const subjectHint = detectSubjectHint(query);
+
+      const scored = resourceData.map((resource) => {
+        const haystack = normalizeText(`${resource.title} ${resource.unit} ${resource.description}`);
+        let score = 0;
+        tokens.forEach((token) => {
+          if (approxIncludes(haystack, token)) {
+            score += 3;
+          }
+        });
+        if (gradeHint) {
+          const resourceGrade = Number(resource.grade);
+          if (resourceGrade === gradeHint) {
+            score += 6;
+          } else if (Math.abs(resourceGrade - gradeHint) <= 1) {
+            score += 3;
+          }
+        }
+        if (subjectHint) {
+          if (resource.subject.toLowerCase() === subjectHint) score += 4;
+          else score -= 1;
+        }
+        if (tokens.includes('video') || tokens.includes('watch')) {
+          score += resource.videoId ? 2 : -2;
+        }
+        return { resource, score };
+      })
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 4)
+        .map(({ resource }) => resource);
+
+      if (scored.length) return scored;
+
+      const fallback = resourceData.filter((resource) => {
+        if (subjectHint && resource.subject.toLowerCase() !== subjectHint) return false;
+        if (gradeHint && Math.abs(Number(resource.grade) - gradeHint) > 2) return false;
+        return true;
+      }).slice(0, 4);
+
+      return fallback.length ? fallback : resourceData.slice(0, 4);
+    };
+
+    questionForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const query = questionForm.questionInput.value.trim();
+      if (!query) return;
+      const results = scoreResourcesForQuery(query);
+      const mathResults = results.filter((resource) => (resource.subject || '').toLowerCase() === 'math');
+      const displayResults = mathResults.length ? mathResults : [];
+
+      questionResultsEl.innerHTML = '';
+      const aiCard = document.createElement('div');
+      aiCard.className = 'ai-answer-card';
+      aiCard.innerHTML = `
+        <p>AI Tutor</p>
+        <div class="ai-answer-text" data-ai-answer>${aiEndpoint ? 'Thinking through your math question...' : 'Enable the Ollama endpoint locally to see live math explanations.'}</div>
+      `;
+      questionResultsEl.appendChild(aiCard);
+      if (aiEndpoint) {
+        const topResource = displayResults[0];
+        const lessonPrompt = topResource
+          ? `After the explanation, recommend practicing "${topResource.title}" (Grade ${topResource.grade} ${topResource.subject}).`
+          : 'After the explanation, recommend a matching math skill to practice next.';
+        askAiTutor(`You are a concise tutor. A student asked: "${query}". Explain the idea in 2 paragraphs (under 140 words) and ${lessonPrompt}`).then((response) => {
+          const target = aiCard.querySelector('[data-ai-answer]');
+          if (target) {
+            target.innerHTML = formatAiHtml(response || 'Try the top recommended lesson to build this skill.');
+          }
+        });
+      }
+
+      if (!displayResults.length) {
+        const fallback = document.createElement('div');
+        fallback.className = 'mini-empty';
+        fallback.textContent = 'No math matches yet. Try another question or open Resources for more practice.';
+        questionResultsEl.appendChild(fallback);
+        return;
+      }
+
+      displayResults.forEach((resource) => {
+        const card = document.createElement('div');
+        card.className = 'question-result-card';
+        card.innerHTML = `
+          <div>
+            <h4>${resource.title}</h4>
+            <span>${resource.unit} • Grade ${resource.grade} ${resource.subject}</span>
+          </div>
+          <div class="question-result-actions">
+            <button type="button" data-suggestion-open data-resource-id="${resource.id}" data-mode="video">Watch</button>
+            <button type="button" data-suggestion-open data-resource-id="${resource.id}" data-mode="practice">Practice</button>
+            <button type="button" data-suggestion-open data-resource-id="${resource.id}" data-mode="test">Quick Test</button>
+          </div>
+        `;
+        questionResultsEl.appendChild(card);
+      });
+    });
+
+    questionResultsEl.addEventListener('click', (event) => {
+      const actionBtn = event.target.closest('[data-suggestion-open]');
+      if (!actionBtn) return;
+      const resourceId = actionBtn.getAttribute('data-resource-id');
+      const mode = actionBtn.getAttribute('data-mode') || 'practice';
+      window.location.href = `resources.html#resource=${resourceId}&mode=${mode}`;
+    });
+
+    activityListEl.addEventListener('click', (event) => {
+      if (event.target.matches('[data-complete-id]')) {
+        const activityId = event.target.getAttribute('data-complete-id');
+        customActivities = customActivities.map((activity) => {
+          if (activity.id === activityId) {
+            const nextStatus = activity.status === 'Completed' ? 'In Progress' : 'Completed';
+            return { ...activity, status: nextStatus };
+          }
+          return activity;
+        });
+        saveActivities();
+        buildActivityFeed();
+      }
+    });
+
+    buildActivityFeed();
+  </script>
+</body>
+</html>

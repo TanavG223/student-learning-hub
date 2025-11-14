@@ -372,6 +372,17 @@
           <button type="button" class="toolbar-tab ${view === 'solution' ? 'is-active' : ''}" data-practice-tab="solution">Show Question</button>
         </div>
       `;
+      const helpOpen = Boolean(practiceSession.helpOpen);
+      const helpCache = practiceSession.helpCache || {};
+      const helpMessage = helpCache[index] || 'Need a nudge? Ask for help and the AI tutor will give you a hint.';
+      const helpPanel = helpOpen ? `
+        <div class="practice-support expanded" data-help-panel>
+          <div class="help-response" data-help-response>${helpMessage}</div>
+          <button type="button" class="help-button" data-help-question>
+            <i class="fas fa-magic"></i> Get a hint
+          </button>
+        </div>
+      ` : '';
       const solutionBlock = `
         <div class="practice-solution">
           <p class="solution-answer">Correct answer: <strong>${current.answer}</strong></p>
@@ -383,7 +394,10 @@
           <div class="practice-toolbar">
             <button type="button" class="ghost-button" data-close-player>&larr; Back</button>
             ${practiceTabs}
+            <button type="button" class="toolbar-help" data-toggle-help aria-pressed="${helpOpen}" aria-label="Need a hint">?
+            </button>
           </div>
+          ${helpPanel}
           <div class="practice-header">
             <div>
               <p class="practice-label">${resource.title}</p>
@@ -401,13 +415,6 @@
               </div>
             ` : solutionBlock}
             <div class="practice-feedback" data-feedback></div>
-            <div class="practice-support">
-              <button type="button" class="help-button" data-help-question>
-                <i class="fas fa-fire-alt"></i>
-                Need a hint
-              </button>
-              <div class="help-response" data-help-response>Need a nudge? Ask for help and the AI tutor will give you a hint.</div>
-            </div>
           </div>
         </div>
       `;
@@ -460,7 +467,9 @@
         answered: false,
         skillLevel: 0,
         view: 'practice',
-        aiCache: {}
+        aiCache: {},
+        helpOpen: false,
+        helpCache: {}
       };
       openModal();
       clearHash();
@@ -522,10 +531,17 @@
         }
       }
 
+      if (event.target.matches('[data-toggle-help]') && practiceSession) {
+        practiceSession.helpOpen = !practiceSession.helpOpen;
+        renderPracticeCard();
+        return;
+      }
+
       if (event.target.matches('[data-next-question]') && practiceSession) {
         practiceSession.index += 1;
         practiceSession.answered = false;
         practiceSession.view = 'practice';
+        practiceSession.helpOpen = false;
         if (practiceSession.index >= practiceSession.questions.length) {
           finishPractice();
         } else {
@@ -541,6 +557,8 @@
         supportEl.textContent = aiEndpoint ? 'Checking with your AI tutor...' : fallback;
         getAiHint(current).then((hint) => {
           const message = formatAiHtml(hint || fallback);
+          practiceSession.helpCache = practiceSession.helpCache || {};
+          practiceSession.helpCache[practiceSession.index] = message;
           if (playerModal.contains(supportEl)) {
             supportEl.innerHTML = message;
           }

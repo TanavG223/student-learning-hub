@@ -696,6 +696,33 @@ body.theme-dark .activity-item span {
   overflow: hidden;
 }
 
+.toolbar-help {
+  border: 2px solid #4c6ef5;
+  background: transparent;
+  color: #4c6ef5;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.toolbar-help:focus-visible,
+.toolbar-help:hover {
+  box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.3);
+  transform: translateY(-1px);
+}
+
+.toolbar-help[aria-pressed="true"] {
+  background-color: #4c6ef5;
+  color: #fff;
+}
+
 .toolbar-tab {
   padding: 8px 18px;
   font-weight: 600;
@@ -794,7 +821,7 @@ body.theme-dark .activity-item span {
 }
 
 .practice-support {
-  margin-top: 18px;
+  margin: 12px 0 0;
   padding: 16px;
   border: 1px solid #e1e7ff;
   border-radius: 18px;
@@ -803,6 +830,14 @@ body.theme-dark .activity-item span {
   flex-wrap: wrap;
   gap: 14px;
   align-items: center;
+  justify-content: space-between;
+}
+
+.practice-support .help-response {
+  flex: 1;
+  min-width: 220px;
+  color: #4c5dd4;
+  font-weight: 500;
 }
 
 .help-button {
@@ -821,13 +856,6 @@ body.theme-dark .activity-item span {
 
 .help-button i {
   color: #ff922b;
-}
-
-.help-response {
-  flex: 1;
-  min-width: 220px;
-  color: #4c5dd4;
-  font-weight: 500;
 }
 
 .practice-solution {
@@ -1602,6 +1630,16 @@ body.theme-dark .practice-card {
   background-color: rgba(8, 14, 32, 0.95);
   border-color: rgba(255,255,255,0.08);
   box-shadow: 0 30px 60px rgba(0,0,0,0.65);
+}
+
+body.theme-dark .toolbar-help {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #e9ecff;
+}
+
+body.theme-dark .toolbar-help[aria-pressed="true"] {
+  background-color: #9da8ff;
+  color: #050912;
 }
 
 body.theme-dark .toolbar-tabs {

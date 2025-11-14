@@ -177,6 +177,12 @@
       return callOllama(prompt);
     };
 
+    const getAiHint = async (question) => {
+      if (!question) return null;
+      const prompt = `You are an encouraging math tutor. Provide a short hint (2 sentences max) that nudges the student toward the strategy without giving the final answer.\nProblem: ${question.prompt}\nFocus your hint on the main idea or first step.\nHint:`;
+      return callOllama(prompt);
+    };
+
     const createAdaptiveVariant = (question, skillLevel = 0) => {
       const baseLabel = question.prompt.replace('Try again:', '').trim();
       const meta = question.meta || {};
@@ -395,6 +401,13 @@
               </div>
             ` : solutionBlock}
             <div class="practice-feedback" data-feedback></div>
+            <div class="practice-support">
+              <button type="button" class="help-button" data-help-question>
+                <i class="fas fa-fire-alt"></i>
+                Need a hint
+              </button>
+              <div class="help-response" data-help-response>Need a nudge? Ask for help and the AI tutor will give you a hint.</div>
+            </div>
           </div>
         </div>
       `;
@@ -518,6 +531,20 @@
         } else {
           renderPracticeCard();
         }
+      }
+
+      if (event.target.matches('[data-help-question]') && practiceSession) {
+        const supportEl = playerModal.querySelector('[data-help-response]');
+        if (!supportEl) return;
+        const current = practiceSession.questions[practiceSession.index];
+        const fallback = createHintForQuestion(current);
+        supportEl.textContent = aiEndpoint ? 'Checking with your AI tutor...' : fallback;
+        getAiHint(current).then((hint) => {
+          const message = formatAiHtml(hint || fallback);
+          if (playerModal.contains(supportEl)) {
+            supportEl.innerHTML = message;
+          }
+        });
       }
     });
 

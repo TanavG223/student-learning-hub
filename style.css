@@ -697,30 +697,33 @@ body.theme-dark .activity-item span {
 }
 
 .toolbar-help {
-  border: 2px solid #4c6ef5;
-  background: transparent;
-  color: #4c6ef5;
-  border-radius: 50%;
-  width: 44px;
+  border: none;
+  background: linear-gradient(135deg, #dfe4ff 0%, #aab8ff 100%);
+  color: #050912;
+  border-radius: 999px;
+  padding: 10px 20px;
+  min-width: 52px;
   height: 44px;
   font-weight: 700;
+  font-size: 15px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-left: auto;
+  margin-left: 14px;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 24px rgba(76, 92, 191, 0.35);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
 .toolbar-help:focus-visible,
 .toolbar-help:hover {
-  box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.3);
+  box-shadow: 0 12px 30px rgba(76, 92, 191, 0.45);
   transform: translateY(-1px);
 }
 
 .toolbar-help[aria-pressed="true"] {
-  background-color: #4c6ef5;
-  color: #fff;
+  opacity: 0.85;
 }
 
 .toolbar-tab {
@@ -821,41 +824,44 @@ body.theme-dark .activity-item span {
 }
 
 .practice-support {
-  margin: 12px 0 0;
-  padding: 16px;
-  border: 1px solid #e1e7ff;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+  margin: 14px 0 18px;
+  padding: 18px 22px;
+  border: 1px solid #d5ddff;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f7f9ff 0%, #e0e6ff 100%);
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
+  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.12);
 }
 
 .practice-support .help-response {
   flex: 1;
   min-width: 220px;
-  color: #4c5dd4;
-  font-weight: 500;
+  color: #1c2750;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .help-button {
   border: none;
   border-radius: 999px;
-  background-color: #0f172a;
-  color: #fff;
+  background-color: #fff;
+  color: #0f172a;
   font-weight: 600;
-  padding: 10px 18px;
+  padding: 12px 20px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
-  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.22);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .help-button i {
-  color: #ff922b;
+  color: #ff7b1a;
 }
 
 .practice-solution {
@@ -1633,13 +1639,13 @@ body.theme-dark .practice-card {
 }
 
 body.theme-dark .toolbar-help {
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #e9ecff;
+  background: linear-gradient(135deg, #5662ff 0%, #8d9bff 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #050912;
 }
 
 body.theme-dark .toolbar-help[aria-pressed="true"] {
-  background-color: #9da8ff;
-  color: #050912;
+  opacity: 0.95;
 }
 
 body.theme-dark .toolbar-tabs {
@@ -1670,22 +1676,18 @@ body.theme-dark .practice-divider {
 }
 
 body.theme-dark .practice-support {
-  background: rgba(20, 27, 56, 0.85);
+  background: linear-gradient(135deg, rgba(34, 42, 76, 0.95) 0%, rgba(20, 26, 52, 0.95) 100%);
   border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 40px rgba(0, 5, 20, 0.55);
 }
 
 body.theme-dark .help-button {
-  background-color: #f8f9ff;
+  background-color: rgba(255, 255, 255, 0.95);
   color: #050912;
-  box-shadow: 0 20px 30px rgba(0, 3, 12, 0.45);
-}
-
-body.theme-dark .help-button i {
-  color: #ff6d00;
 }
 
 body.theme-dark .help-response {
-  color: #a5b4ff;
+  color: #cfd6ff;
 }
 
 body.theme-dark .practice-solution {

@@ -703,17 +703,41 @@ body.theme-dark .activity-item span {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 12px;
+  flex-wrap: nowrap;
   margin-bottom: 18px;
+}
+
+.practice-toolbar .ghost-button {
+  flex-shrink: 0;
 }
 
 .toolbar-actions {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
+}
+
+.toolbar-tabs,
+.toolbar-help {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .practice-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .toolbar-actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
 }
 
 .toolbar-tabs {

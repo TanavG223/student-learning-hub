@@ -393,9 +393,13 @@
         <div class="practice-card">
           <div class="practice-toolbar">
             <button type="button" class="ghost-button" data-close-player>&larr; Back</button>
-            ${practiceTabs}
-            <button type="button" class="toolbar-help" data-toggle-help aria-pressed="${helpOpen}" aria-label="Need a hint">?
-            </button>
+            <div class="toolbar-actions">
+              ${practiceTabs}
+              <button type="button" class="toolbar-help" data-toggle-help aria-pressed="${helpOpen}" aria-label="Need a hint">
+                <span class="toolbar-help-icon">?</span>
+                <span class="toolbar-help-label">Help</span>
+              </button>
+            </div>
           </div>
           ${helpPanel}
           <div class="practice-header">

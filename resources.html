@@ -396,8 +396,8 @@
             <div class="toolbar-actions">
               ${practiceTabs}
               <button type="button" class="toolbar-help" data-toggle-help aria-pressed="${helpOpen}" aria-label="Need a hint">
-                <span class="toolbar-help-icon">?</span>
-                <span class="toolbar-help-label">Help</span>
+                <span class="toolbar-help-icon" aria-hidden="true">?</span>
+                <span class="sr-only">Need a hint</span>
               </button>
             </div>
           </div>
@@ -673,7 +673,7 @@
                 const card = document.createElement('article');
                 card.className = 'resource-card compact';
                 card.innerHTML = `
-                  <div class="badge" style="background-color:#eef2ff;color:#4c5dd4;margin-bottom:12px;">${badgeLabel}</div>
+                  <div class="badge resource-badge">${badgeLabel}</div>
                   <h4>${resource.title}</h4>
                   <p class="resource-meta">Grade ${resource.grade}</p>
                   <p>${resource.description}</p>

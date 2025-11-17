@@ -1371,7 +1371,7 @@ body.theme-dark .activity-item span {
 }
 
 .founders-card {
-  background: linear-gradient(120deg, rgba(76, 110, 245, 0.08), rgba(90, 210, 124, 0.12));
+  background: linear-gradient(120deg, rgba(76, 110, 245, 0.07), rgba(90, 210, 124, 0.12));
   border-radius: 28px;
   padding: 28px 32px;
   border: 1px solid rgba(76, 110, 245, 0.15);
@@ -1379,10 +1379,49 @@ body.theme-dark .activity-item span {
 }
 
 .founders-card h3 {
-  margin: 6px 0 8px;
+  margin: 6px 0 18px;
 }
 
-.founders-card p {
+.founder-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.founder-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  padding: 10px 16px;
+  border: 1px solid rgba(76, 110, 245, 0.15);
+  min-width: 220px;
+}
+
+.founder-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4c6ef5, #5ad27c);
+  color: #fff;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.05em;
+}
+
+.founder-list p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #5a678f;
+}
+
+.founder-note {
   margin: 0;
   color: #44506f;
   line-height: 1.6;
@@ -1728,6 +1767,20 @@ body.theme-dark .founders-card {
 
 body.theme-dark .founders-card p {
   color: #ccd8ff;
+}
+
+body.theme-dark .founder-list li {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.theme-dark .founder-avatar {
+  background: linear-gradient(135deg, #7c8cff, #59f2a7);
+}
+
+body.theme-dark .founder-note,
+body.theme-dark .founder-list p {
+  color: #d0dbff;
 }
 
 body.theme-dark .toolbar-help {

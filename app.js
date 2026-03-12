@@ -883,4 +883,14 @@
       });
     });
   });
+
+  const registerServiceWorker = () => {
+    if (!('serviceWorker' in navigator)) return;
+    const swUrl = new URL('service-worker.js', window.location.href);
+    navigator.serviceWorker
+      .register(swUrl.href)
+      .catch((error) => console.warn('LearnHub service worker registration failed', error));
+  };
+
+  window.addEventListener('load', registerServiceWorker);
 })();

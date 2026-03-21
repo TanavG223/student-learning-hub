@@ -154,8 +154,10 @@
     customActivities = customActivities.map((activity) => ({
       ...activity,
       status: activity.status || 'In Progress',
-      source: 'custom'
+      source: 'custom',
+      completedAt: activity.completedAt || null
     }));
+    const COMPLETED_ARCHIVE_LIMIT = 50;
 
     const statTotalEl = document.querySelector('[data-stat-total]');
     const statCompletedEl = document.querySelector('[data-stat-completed]');
@@ -247,8 +249,22 @@
     const pointsProgressLabelEl = document.querySelector('[data-points-progress-label]');
     const pointsRewardEl = document.querySelector('[data-points-reward]');
     const dashboardLevelEl = document.querySelector('[data-dashboard-level]');
-    
-    const saveActivities = () => localStorage.setItem(activityKey, JSON.stringify(customActivities));
+
+    const trimArchivedActivities = () => {
+      const archived = customActivities
+        .filter((activity) => activity.status === 'Completed')
+        .sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0));
+      if (archived.length <= COMPLETED_ARCHIVE_LIMIT) return;
+      const keepIds = new Set(archived.slice(0, COMPLETED_ARCHIVE_LIMIT).map((activity) => activity.id));
+      customActivities = customActivities.filter(
+        (activity) => activity.status !== 'Completed' || keepIds.has(activity.id)
+      );
+    };
+
+    const saveActivities = () => {
+      trimArchivedActivities();
+      localStorage.setItem(activityKey, JSON.stringify(customActivities));
+    };
 
     const renderProgressWidgets = () => {
       progressData = progressApi?.get?.() || progressData;
@@ -332,7 +348,8 @@
         title,
         meta: meta || 'No notes yet',
         status: 'In Progress',
-        source: 'custom'
+        source: 'custom',
+        completedAt: null
       };
       customActivities.unshift(newItem);
       saveActivities();
@@ -428,18 +445,18 @@
 
     const buildActivityFeed = () => {
       const autoActivities = getHistoryActivities();
-      const combined = [...autoActivities, ...customActivities];
+      const visibleCustomActivities = customActivities.filter((item) => item.status !== 'Completed');
+      const combined = [...autoActivities, ...visibleCustomActivities];
+      const trackedCount = autoActivities.length + customActivities.length;
+      const completed = customActivities.length - visibleCustomActivities.length;
+      const inProgress = Math.max(trackedCount - completed, 0);
+      const completionRate = trackedCount ? Math.round((completed / trackedCount) * 100) : 0;
 
-      const totalTracked = combined.length;
-      const completed = customActivities.filter((item) => item.status === 'Completed').length;
-      const inProgress = Math.max(totalTracked - completed, 0);
-      const completionRate = totalTracked ? Math.round((completed / totalTracked) * 100) : 0;
-
-      statTotalEl.textContent = totalTracked;
+      statTotalEl.textContent = trackedCount;
       statCompletedEl.textContent = completed;
       statProgressEl.textContent = inProgress;
       statRateEl.textContent = `${completionRate}%`;
-      activityBadgeEl.textContent = `${autoActivities.length} auto • ${customActivities.length} custom`;
+      activityBadgeEl.textContent = `${autoActivities.length} auto • ${visibleCustomActivities.length} custom`;
 
       activityListEl.innerHTML = '';
       if (!combined.length) {
@@ -460,7 +477,7 @@
             <span>${item.meta}</span>
           </div>
           <div class="activity-actions">
-            ${item.source === 'custom' ? `<button data-complete-id="${item.id}">${item.status === 'Completed' ? 'Undo' : 'Complete'}</button>` : `<span>${item.status}</span>`}
+            ${item.source === 'custom' ? `<button data-complete-id="${item.id}">Complete</button>` : `<span>${item.status}</span>`}
           </div>
         `;
         activityListEl.appendChild(row);
@@ -615,18 +632,20 @@
     });
 
     activityListEl.addEventListener('click', (event) => {
-      if (event.target.matches('[data-complete-id]')) {
-        const activityId = event.target.getAttribute('data-complete-id');
-        customActivities = customActivities.map((activity) => {
-          if (activity.id === activityId) {
-            const nextStatus = activity.status === 'Completed' ? 'In Progress' : 'Completed';
-            return { ...activity, status: nextStatus };
-          }
-          return activity;
-        });
-        saveActivities();
-        buildActivityFeed();
-      }
+      const completeBtn = event.target.closest('[data-complete-id]');
+      if (!completeBtn) return;
+      const activityId = completeBtn.getAttribute('data-complete-id');
+      let didUpdate = false;
+      customActivities = customActivities.map((activity) => {
+        if (activity.id === activityId && activity.status !== 'Completed') {
+          didUpdate = true;
+          return { ...activity, status: 'Completed', completedAt: Date.now() };
+        }
+        return activity;
+      });
+      if (!didUpdate) return;
+      saveActivities();
+      buildActivityFeed();
     });
 
     buildActivityFeed();

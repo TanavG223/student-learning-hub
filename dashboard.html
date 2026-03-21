@@ -217,6 +217,8 @@
       return null;
     };
     const KEYWORD_ALIASES = {
+      factoring: ['factor', 'factoring', 'factorization', 'multiples', 'gcf', 'greatest common factor', 'prime factor', 'prime factorization'],
+      quadratic: ['quadratics', 'quadratic equation', 'quadratic formula', 'parabola'],
       multiplication: ['multiply', 'multiplication facts', 'times', 'times tables', 'product', 'products'],
       division: ['divide', 'quotient', 'dividing'],
       fraction: ['fractions', 'fractional', 'rational'],
@@ -232,6 +234,8 @@
       integers: ['positive', 'negative numbers', 'absolute value']
     };
     const KEYWORD_SUBJECTS = {
+      factoring: 'math',
+      quadratic: 'math',
       multiplication: 'math',
       multiply: 'math',
       division: 'math',
@@ -265,6 +269,33 @@
         }
       }
       return null;
+    };
+    const TOPIC_KEYWORDS = {
+      factoring: ['factor', 'factoring', 'prime', 'gcf', 'lcm', 'multiple', 'quadratic', 'polynomial'],
+      quadratic: ['quadratic', 'parabola', 'vertex', 'polynomial'],
+      multiplication: ['multiply', 'product', 'times', 'array', 'fluency'],
+      division: ['divide', 'quotient', 'long division', 'remainder'],
+      addition: ['add', 'sum', 'plus'],
+      subtraction: ['subtract', 'difference', 'minus'],
+      fraction: ['fraction', 'numerator', 'denominator', 'mixed number', 'equivalent fraction'],
+      decimals: ['decimal', 'tenths', 'hundredths', 'place value'],
+      geometry: ['triangle', 'angle', 'area', 'perimeter', 'volume', 'surface area'],
+      algebra: ['variable', 'equation', 'expression', 'solve for'],
+      ratio: ['ratio', 'proportion', 'unit rate'],
+      statistics: ['mean', 'median', 'mode', 'dot plot', 'line plot', 'histogram'],
+      probability: ['probability', 'chance', 'likelihood', 'event'],
+      graphing: ['coordinate', 'graph', 'slope', 'line', 'plot']
+    };
+    const topicHintsFromKeywords = (tokens) => {
+      const detected = new Set();
+      tokens.forEach((token) => {
+        Object.entries(TOPIC_KEYWORDS).forEach(([topic, keywords]) => {
+          if (keywords.includes(token) || token === topic) {
+            detected.add(topic);
+          }
+        });
+      });
+      return Array.from(detected);
     };
     const approxIncludes = (haystack, token) => {
       if (!token) return false;
@@ -577,6 +608,7 @@
       if (!expandedKeywords.length) {
         return { matches: [], reason: 'short' };
       }
+      const topicHints = topicHintsFromKeywords(expandedKeywords);
       const gradeHint = detectGradeHint(query);
       const subjectHint = detectSubjectHint(query) || subjectFromKeywords(expandedKeywords);
       const wantsVideo = expandedKeywords.some((token) => ['video', 'watch', 'lesson'].includes(token));
@@ -591,6 +623,12 @@
             if (approxIncludes(haystack, token)) {
               hits += 1;
               score += token.length >= 7 ? 5 : 3;
+            }
+          });
+          topicHints.forEach((topic) => {
+            const keywords = TOPIC_KEYWORDS[topic] || [topic];
+            if (keywords.some((word) => haystack.includes(normalizeText(word)))) {
+              score += 6;
             }
           });
           if (gradeHint) {
@@ -624,6 +662,21 @@
         .slice(0, 4);
       if (aliasFallback.length) {
         return { matches: aliasFallback, reason: 'alias' };
+      }
+
+      if (topicHints.length) {
+        const topicFallback = resourceData
+          .filter((resource) => {
+            const haystack = normalizeText(`${resource.title} ${resource.unit} ${resource.description}`);
+            return topicHints.some((topic) => {
+              const keywords = TOPIC_KEYWORDS[topic] || [topic];
+              return keywords.some((word) => haystack.includes(normalizeText(word)));
+            });
+          })
+          .slice(0, 4);
+        if (topicFallback.length) {
+          return { matches: topicFallback, reason: 'topic' };
+        }
       }
 
       const subjectFallback = resourceData

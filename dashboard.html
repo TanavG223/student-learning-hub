@@ -522,61 +522,74 @@
 
     const scoreResourcesForQuery = (query) => {
       const normalizedQuery = normalizeText(query);
-      if (!normalizedQuery) return [];
       const tokens = normalizedQuery.split(' ').filter(Boolean);
+      const keywords = tokens.filter((token) => token.length >= 3);
+      if (!keywords.length) {
+        return { matches: [], reason: 'short' };
+      }
+
       const gradeHint = detectGradeHint(query);
       const subjectHint = detectSubjectHint(query);
+      const wantsVideo = keywords.some((token) => ['video', 'watch', 'lesson'].includes(token));
+      const MIN_MATCH_SCORE = 5;
 
-      const scored = resourceData.map((resource) => {
-        const haystack = normalizeText(`${resource.title} ${resource.unit} ${resource.description}`);
-        let score = 0;
-        tokens.forEach((token) => {
-          if (approxIncludes(haystack, token)) {
-            score += 3;
+      const matches = resourceData
+        .map((resource) => {
+          const haystack = normalizeText(`${resource.title} ${resource.unit} ${resource.description}`);
+          let score = 0;
+          let hits = 0;
+          keywords.forEach((token) => {
+            if (approxIncludes(haystack, token)) {
+              hits += 1;
+              score += token.length >= 6 ? 4 : 3;
+            }
+          });
+          if (gradeHint) {
+            const resourceGrade = Number(resource.grade);
+            if (resourceGrade === gradeHint) score += 6;
+            else if (Math.abs(resourceGrade - gradeHint) <= 1) score += 3;
+            else score -= 1;
           }
-        });
-        if (gradeHint) {
-          const resourceGrade = Number(resource.grade);
-          if (resourceGrade === gradeHint) {
-            score += 6;
-          } else if (Math.abs(resourceGrade - gradeHint) <= 1) {
-            score += 3;
+          if (subjectHint) {
+            if ((resource.subject || '').toLowerCase() === subjectHint) score += 4;
+            else score -= 2;
           }
-        }
-        if (subjectHint) {
-          if (resource.subject.toLowerCase() === subjectHint) score += 4;
-          else score -= 1;
-        }
-        if (tokens.includes('video') || tokens.includes('watch')) {
-          score += resource.videoId ? 2 : -2;
-        }
-        return { resource, score };
-      })
-        .filter(({ score }) => score > 0)
+          if (wantsVideo) {
+            score += resource.videoId ? 2 : -3;
+          }
+          return { resource, score, hits };
+        })
+        .filter(({ score, hits }) => hits > 0 && score >= MIN_MATCH_SCORE)
         .sort((a, b) => b.score - a.score)
         .slice(0, 4)
         .map(({ resource }) => resource);
 
-      if (scored.length) return scored;
+      if (matches.length) {
+        return { matches, reason: 'ok' };
+      }
 
-      const fallback = resourceData.filter((resource) => {
-        if (subjectHint && resource.subject.toLowerCase() !== subjectHint) return false;
-        if (gradeHint && Math.abs(Number(resource.grade) - gradeHint) > 2) return false;
-        return true;
-      }).slice(0, 4);
-
-      return fallback.length ? fallback : resourceData.slice(0, 4);
+      return { matches: [], reason: 'no-match' };
     };
 
     questionForm.addEventListener('submit', (event) => {
       event.preventDefault();
       const query = questionForm.questionInput.value.trim();
       if (!query) return;
-      const results = scoreResourcesForQuery(query);
-      const mathResults = results.filter((resource) => (resource.subject || '').toLowerCase() === 'math');
+      const { matches, reason } = scoreResourcesForQuery(query);
+      const mathResults = matches.filter((resource) => (resource.subject || '').toLowerCase() === 'math');
       const displayResults = mathResults.length ? mathResults : [];
 
       questionResultsEl.innerHTML = '';
+      if (!displayResults.length) {
+        const fallback = document.createElement('div');
+        fallback.className = 'mini-empty';
+        fallback.textContent = reason === 'short'
+          ? 'Please enter a real topic (e.g., "factor quadratics" or "solve proportions").'
+          : 'No matching lessons yet. Try a different keyword like "fractions" or "geometry".';
+        questionResultsEl.appendChild(fallback);
+        return;
+      }
+
       const aiCard = document.createElement('div');
       aiCard.className = 'ai-answer-card';
       aiCard.innerHTML = `
@@ -595,14 +608,6 @@
             target.innerHTML = formatAiHtml(response || 'Try the top recommended lesson to build this skill.');
           }
         });
-      }
-
-      if (!displayResults.length) {
-        const fallback = document.createElement('div');
-        fallback.className = 'mini-empty';
-        fallback.textContent = 'No math matches yet. Try another question or open Resources for more practice.';
-        questionResultsEl.appendChild(fallback);
-        return;
       }
 
       displayResults.forEach((resource) => {

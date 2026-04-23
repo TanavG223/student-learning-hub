@@ -5,7 +5,7 @@
 
   const RESOURCE_KEY = 'learnhubResources';
   const RESOURCE_VERSION_KEY = 'learnhubResourceVersion';
-  const RESOURCE_VERSION = '4.3.0';
+  const RESOURCE_VERSION = '4.4.0';
   const PROGRESS_KEY = 'learnhubProgress';
   const TEAM_STORE_KEY = 'learnhubTeams';
   const HISTORY_KEY = 'learnhubHistory';
@@ -448,118 +448,118 @@
 
   const mathGradeCatalog = {
     1: [
-      { unit: 'Unit 1: Counting & Number Patterns', title: 'Counting within 120', description: 'Khan Academy · Grade 1 Counting', videoId: 'HWxFN7KSM2E', generator: 'counting' },
-      { unit: 'Unit 2: Place Value Foundations', title: 'Place Value & Base Ten', description: 'Khan Academy · Grade 1 Place Value', videoId: 'HWxFN7KSM2E', generator: 'placeValue' },
+      { unit: 'Unit 1: Counting & Number Patterns', title: 'Counting within 120', description: 'Khan Academy · Grade 1 Counting', videoId: 'cDpBtkU2cf8', generator: 'counting' },
+      { unit: 'Unit 2: Place Value Foundations', title: 'Place Value & Base Ten', description: 'Khan Academy · Grade 1 Place Value', videoId: 'cDpBtkU2cf8', generator: 'placeValue' },
       { unit: 'Unit 3: Addition & Subtraction Facts', title: 'Strategies for +/- 20', description: 'Khan Academy · Grade 1 Addition', videoId: 'QkPa9V2wtZs', generator: 'addSub' },
       { unit: 'Unit 4: Measurement & Time', title: 'Length, Time, and Data', description: 'Khan Academy · Grade 1 Measurement', videoId: 'DnFrOetuUKg', generator: 'measurement' },
-      { unit: 'Unit 5: Shapes & Equal Parts', title: 'Halves and Quarters', description: 'Khan Academy · Grade 1 Geometry', videoId: 'jfG8ZxwK0Kk', generator: 'fractions' },
-      { unit: 'Unit 6: Picture Graphs', title: 'Collect & Organize Data', description: 'Khan Academy · Grade 1 Data', videoId: 'hsFWih0i9W8', generator: 'statistics' }
+      { unit: 'Unit 5: Shapes & Equal Parts', title: 'Halves and Quarters', description: 'Khan Academy · Grade 1 Geometry', videoId: '9uwLgf84p5w', generator: 'fractions' },
+      { unit: 'Unit 6: Picture Graphs', title: 'Collect & Organize Data', description: 'Khan Academy · Grade 1 Data', videoId: 'bXxkxJnqt3s', generator: 'statistics' }
     ],
     2: [
       { unit: 'Unit 1: Addition & Subtraction within 1000', title: 'Strategies for +/- 1000', description: 'Khan Academy · Grade 2 Addition & Subtraction', videoId: 'QkPa9V2wtZs', generator: 'addSub' },
-      { unit: 'Unit 2: Equal Groups & Arrays', title: 'Intro to Multiplication', description: 'Khan Academy · Grade 2 Multiplication', videoId: '1H3lW2rR9xQ', generator: 'multiplication' },
+      { unit: 'Unit 2: Equal Groups & Arrays', title: 'Intro to Multiplication', description: 'Khan Academy · Grade 2 Multiplication', videoId: 'cDpBtkU2cf8', generator: 'multiplication' },
       { unit: 'Unit 3: Measurement & Data', title: 'Time, Money, and Graphs', description: 'Khan Academy · Grade 2 Measurement', videoId: 'DnFrOetuUKg', generator: 'measurement' },
-      { unit: 'Unit 4: Base Ten & Place Value', title: 'Place Value Foundations', description: 'Khan Academy · Grade 2 Place Value', videoId: 'HWxFN7KSM2E', generator: 'placeValue' },
+      { unit: 'Unit 4: Base Ten & Place Value', title: 'Place Value Foundations', description: 'Khan Academy · Grade 2 Place Value', videoId: 'cDpBtkU2cf8', generator: 'placeValue' },
       { unit: 'Unit 5: Money & Decimals', title: 'Dollar and Cent Values', description: 'Khan Academy · Grade 2 Money', videoId: 'QkPa9V2wtZs', generator: 'decimals' },
-      { unit: 'Unit 6: Graphs & Data Stories', title: 'Tally and Bar Graphs', description: 'Khan Academy · Grade 2 Data', videoId: 'hsFWih0i9W8', generator: 'statistics' }
+      { unit: 'Unit 6: Graphs & Data Stories', title: 'Tally and Bar Graphs', description: 'Khan Academy · Grade 2 Data', videoId: 'bXxkxJnqt3s', generator: 'statistics' }
     ],
     3: [
-      { unit: 'Unit 1: Multiplication & Division Facts', title: 'Fluency with Facts', description: 'Khan Academy · Grade 3 Multiplication & Division', videoId: '1H3lW2rR9xQ', generator: 'multiplication' },
+      { unit: 'Unit 1: Multiplication & Division Facts', title: 'Fluency with Facts', description: 'Khan Academy · Grade 3 Multiplication & Division', videoId: 'cDpBtkU2cf8', generator: 'multiplication' },
       { unit: 'Unit 2: Fractions & Number Line', title: 'Fractions in Context', description: 'Khan Academy · Grade 3 Fractions', videoId: 'DnFrOetuUKg', generator: 'fractions' },
-      { unit: 'Unit 3: Area & Perimeter', title: 'Area Models & Measurement', description: 'Khan Academy · Grade 3 Measurement', videoId: 'jfG8ZxwK0Kk', generator: 'measurement' },
-      { unit: 'Unit 4: Data & Graphs', title: 'Represent & Interpret Data', description: 'Khan Academy · Grade 3 Data', videoId: 'hsFWih0i9W8', generator: 'statistics' },
-      { unit: 'Unit 5: Place Value & Rounding', title: 'Thousands and Ten-thousands', description: 'Khan Academy · Grade 3 Place Value', videoId: 'HWxFN7KSM2E', generator: 'placeValue' },
+      { unit: 'Unit 3: Area & Perimeter', title: 'Area Models & Measurement', description: 'Khan Academy · Grade 3 Measurement', videoId: '9uwLgf84p5w', generator: 'measurement' },
+      { unit: 'Unit 4: Data & Graphs', title: 'Represent & Interpret Data', description: 'Khan Academy · Grade 3 Data', videoId: 'bXxkxJnqt3s', generator: 'statistics' },
+      { unit: 'Unit 5: Place Value & Rounding', title: 'Thousands and Ten-thousands', description: 'Khan Academy · Grade 3 Place Value', videoId: 'cDpBtkU2cf8', generator: 'placeValue' },
       { unit: 'Unit 6: Multi-digit Addition & Subtraction', title: 'Column Methods', description: 'Khan Academy · Grade 3 Addition/Subtraction', videoId: 'QkPa9V2wtZs', generator: 'addSub' }
     ],
     4: [
       { unit: 'Unit 1: Fraction Equivalence & Operations', title: 'Add & Subtract Fractions', description: 'Khan Academy · Grade 4 Fractions', videoId: 'DnFrOetuUKg', generator: 'fractions' },
       { unit: 'Unit 2: Decimals & Place Value', title: 'Tenths and Hundredths', description: 'Khan Academy · Grade 4 Decimals', videoId: 'QkPa9V2wtZs', generator: 'decimals' },
-      { unit: 'Unit 3: Geometry & Angles', title: 'Lines, Angles, and Symmetry', description: 'Khan Academy · Grade 4 Geometry', videoId: 'jfG8ZxwK0Kk', generator: 'geometry' },
-      { unit: 'Unit 4: Multiplication & Division Strategies', title: 'Multi-digit Products', description: 'Khan Academy · Grade 4 Multiplication', videoId: '1H3lW2rR9xQ', generator: 'multiplication' },
+      { unit: 'Unit 3: Geometry & Angles', title: 'Lines, Angles, and Symmetry', description: 'Khan Academy · Grade 4 Geometry', videoId: '9uwLgf84p5w', generator: 'geometry' },
+      { unit: 'Unit 4: Multiplication & Division Strategies', title: 'Multi-digit Products', description: 'Khan Academy · Grade 4 Multiplication', videoId: 'cDpBtkU2cf8', generator: 'multiplication' },
       { unit: 'Unit 5: Measurement Conversions', title: 'Metric and Customary Units', description: 'Khan Academy · Grade 4 Measurement', videoId: 'DnFrOetuUKg', generator: 'measurement' },
-      { unit: 'Unit 6: Factors & Multiples', title: 'Prime vs Composite', description: 'Khan Academy · Grade 4 Number Theory', videoId: 'HWxFN7KSM2E', generator: 'counting' }
+      { unit: 'Unit 6: Factors & Multiples', title: 'Prime vs Composite', description: 'Khan Academy · Grade 4 Number Theory', videoId: 'cDpBtkU2cf8', generator: 'counting' }
     ],
     5: [
       { unit: 'Unit 1: Fraction Operations', title: 'Multiply & Divide Fractions', description: 'Khan Academy · Grade 5 Fractions', videoId: 'DnFrOetuUKg', generator: 'fractions' },
       { unit: 'Unit 2: Decimal Operations', title: 'Add/Subtract Decimals', description: 'Khan Academy · Grade 5 Decimals', videoId: 'QkPa9V2wtZs', generator: 'decimals' },
-      { unit: 'Unit 3: Volume & Measurement', title: 'Volume of Rectangular Prisms', description: 'Khan Academy · Grade 5 Measurement', videoId: 'jfG8ZxwK0Kk', generator: 'measurement' },
-      { unit: 'Unit 4: Interpreting Data', title: 'Line Plots & Graphs', description: 'Khan Academy · Grade 5 Data', videoId: 'hsFWih0i9W8', generator: 'statistics' },
-      { unit: 'Unit 5: Place Value to Millions', title: 'Powers of Ten Patterns', description: 'Khan Academy · Grade 5 Place Value', videoId: 'HWxFN7KSM2E', generator: 'placeValue' },
-      { unit: 'Unit 6: Intro to Ratios', title: 'Scaling Recipes & Maps', description: 'Khan Academy · Grade 5 Ratios', videoId: '1H3lW2rR9xQ', generator: 'ratios' }
+      { unit: 'Unit 3: Volume & Measurement', title: 'Volume of Rectangular Prisms', description: 'Khan Academy · Grade 5 Measurement', videoId: '9uwLgf84p5w', generator: 'measurement' },
+      { unit: 'Unit 4: Interpreting Data', title: 'Line Plots & Graphs', description: 'Khan Academy · Grade 5 Data', videoId: 'bXxkxJnqt3s', generator: 'statistics' },
+      { unit: 'Unit 5: Place Value to Millions', title: 'Powers of Ten Patterns', description: 'Khan Academy · Grade 5 Place Value', videoId: 'cDpBtkU2cf8', generator: 'placeValue' },
+      { unit: 'Unit 6: Intro to Ratios', title: 'Scaling Recipes & Maps', description: 'Khan Academy · Grade 5 Ratios', videoId: 'cDpBtkU2cf8', generator: 'ratios' }
     ],
     6: [
-      { unit: 'Unit 1: Ratios & Rates', title: 'Proportional Reasoning', description: 'Khan Academy · Grade 6 Ratios', videoId: '1H3lW2rR9xQ', generator: 'ratios' },
-      { unit: 'Unit 2: Integers & Rational Numbers', title: 'Positive and Negative Numbers', description: 'Khan Academy · Grade 6 Integers', videoId: 'hsFWih0i9W8', generator: 'integers' },
-      { unit: 'Unit 3: Statistics & Data', title: 'Distributions and Measures', description: 'Khan Academy · Grade 6 Statistics', videoId: 'hsFWih0i9W8', generator: 'statistics' },
-      { unit: 'Unit 4: Geometry & Area', title: 'Polygons and Area', description: 'Khan Academy · Grade 6 Geometry', videoId: 'jfG8ZxwK0Kk', generator: 'geometry' },
-      { unit: 'Unit 5: Expressions & Equations', title: 'One-step Equations', description: 'Khan Academy · Grade 6 Algebra', videoId: '4lI4XcUcYpo', generator: 'inequalities' },
+      { unit: 'Unit 1: Ratios & Rates', title: 'Proportional Reasoning', description: 'Khan Academy · Grade 6 Ratios', videoId: 'cDpBtkU2cf8', generator: 'ratios' },
+      { unit: 'Unit 2: Integers & Rational Numbers', title: 'Positive and Negative Numbers', description: 'Khan Academy · Grade 6 Integers', videoId: 'bXxkxJnqt3s', generator: 'integers' },
+      { unit: 'Unit 3: Statistics & Data', title: 'Distributions and Measures', description: 'Khan Academy · Grade 6 Statistics', videoId: 'bXxkxJnqt3s', generator: 'statistics' },
+      { unit: 'Unit 4: Geometry & Area', title: 'Polygons and Area', description: 'Khan Academy · Grade 6 Geometry', videoId: '9uwLgf84p5w', generator: 'geometry' },
+      { unit: 'Unit 5: Expressions & Equations', title: 'One-step Equations', description: 'Khan Academy · Grade 6 Algebra', videoId: '68MakfeY8z8', generator: 'inequalities' },
       { unit: 'Unit 6: Measurement Conversions', title: 'Surface Area & Volume', description: 'Khan Academy · Grade 6 Measurement', videoId: 'DnFrOetuUKg', generator: 'measurement' }
     ],
     7: [
-      { unit: 'Unit 1: Proportional Relationships', title: 'Rates, Ratios, and Percentages', description: 'Khan Academy · Grade 7 Ratios', videoId: '1H3lW2rR9xQ', generator: 'ratios' },
-      { unit: 'Unit 2: Probability & Sampling', title: 'Chance Experiments', description: 'Khan Academy · Grade 7 Probability', videoId: 'hsFWih0i9W8', generator: 'probability' },
-      { unit: 'Unit 3: Expressions & Inequalities', title: 'Two-Step Inequalities', description: 'Khan Academy · Grade 7 Algebra', videoId: '4lI4XcUcYpo', generator: 'inequalities' },
-      { unit: 'Unit 4: Integers & Rational Numbers', title: 'Add/Subtract Rational Numbers', description: 'Khan Academy · Grade 7 Integers', videoId: 'hsFWih0i9W8', generator: 'integers' },
-      { unit: 'Unit 5: Geometry & Scale Drawings', title: 'Scale Factors', description: 'Khan Academy · Grade 7 Geometry', videoId: 'jfG8ZxwK0Kk', generator: 'geometry' },
-      { unit: 'Unit 6: Statistics & Variability', title: 'Mean Absolute Deviation', description: 'Khan Academy · Grade 7 Statistics', videoId: 'hsFWih0i9W8', generator: 'statistics' }
+      { unit: 'Unit 1: Proportional Relationships', title: 'Rates, Ratios, and Percentages', description: 'Khan Academy · Grade 7 Ratios', videoId: 'cDpBtkU2cf8', generator: 'ratios' },
+      { unit: 'Unit 2: Probability & Sampling', title: 'Chance Experiments', description: 'Khan Academy · Grade 7 Probability', videoId: 'bXxkxJnqt3s', generator: 'probability' },
+      { unit: 'Unit 3: Expressions & Inequalities', title: 'Two-Step Inequalities', description: 'Khan Academy · Grade 7 Algebra', videoId: '68MakfeY8z8', generator: 'inequalities' },
+      { unit: 'Unit 4: Integers & Rational Numbers', title: 'Add/Subtract Rational Numbers', description: 'Khan Academy · Grade 7 Integers', videoId: 'bXxkxJnqt3s', generator: 'integers' },
+      { unit: 'Unit 5: Geometry & Scale Drawings', title: 'Scale Factors', description: 'Khan Academy · Grade 7 Geometry', videoId: '9uwLgf84p5w', generator: 'geometry' },
+      { unit: 'Unit 6: Statistics & Variability', title: 'Mean Absolute Deviation', description: 'Khan Academy · Grade 7 Statistics', videoId: 'bXxkxJnqt3s', generator: 'statistics' }
     ],
     8: [
-      { unit: 'Unit 1: Linear Equations & Functions', title: 'Slope, y-intercept, and Graphs', description: 'Khan Academy · Grade 8 Linear Algebra', videoId: '4lI4XcUcYpo', generator: 'linear' },
-      { unit: 'Unit 2: Systems of Equations', title: 'Solve by Graphing or Substitution', description: 'Khan Academy · Grade 8 Systems', videoId: '1H3lW2rR9xQ', generator: 'systems' },
-      { unit: 'Unit 3: Transformations & Similarity', title: 'Dilations, Rotations, Reflections', description: 'Khan Academy · Grade 8 Geometry', videoId: 'jfG8ZxwK0Kk', generator: 'geometry' },
-      { unit: 'Unit 4: Inequalities & Functions', title: 'Inequalities on the Number Line', description: 'Khan Academy · Grade 8 Algebra', videoId: '4lI4XcUcYpo', generator: 'inequalities' },
-      { unit: 'Unit 5: Exponents & Scientific Notation', title: 'Powers & Roots', description: 'Khan Academy · Grade 8 Exponents', videoId: 'hsFWih0i9W8', generator: 'exponential' },
-      { unit: 'Unit 6: Statistics & Probability', title: 'Two-way Tables', description: 'Khan Academy · Grade 8 Statistics', videoId: 'hsFWih0i9W8', generator: 'statistics' }
+      { unit: 'Unit 1: Linear Equations & Functions', title: 'Slope, y-intercept, and Graphs', description: 'Khan Academy · Grade 8 Linear Algebra', videoId: '68MakfeY8z8', generator: 'linear' },
+      { unit: 'Unit 2: Systems of Equations', title: 'Solve by Graphing or Substitution', description: 'Khan Academy · Grade 8 Systems', videoId: 'cDpBtkU2cf8', generator: 'systems' },
+      { unit: 'Unit 3: Transformations & Similarity', title: 'Dilations, Rotations, Reflections', description: 'Khan Academy · Grade 8 Geometry', videoId: '9uwLgf84p5w', generator: 'geometry' },
+      { unit: 'Unit 4: Inequalities & Functions', title: 'Inequalities on the Number Line', description: 'Khan Academy · Grade 8 Algebra', videoId: '68MakfeY8z8', generator: 'inequalities' },
+      { unit: 'Unit 5: Exponents & Scientific Notation', title: 'Powers & Roots', description: 'Khan Academy · Grade 8 Exponents', videoId: 'bXxkxJnqt3s', generator: 'exponential' },
+      { unit: 'Unit 6: Statistics & Probability', title: 'Two-way Tables', description: 'Khan Academy · Grade 8 Statistics', videoId: 'bXxkxJnqt3s', generator: 'statistics' }
     ],
     9: [
-      { unit: 'Unit 1: Quadratic Functions', title: 'Factoring and Vertex Form', description: 'Khan Academy · Algebra 1 Quadratics', videoId: 'jHwW5wy_L8o', generator: 'quadratics' },
-      { unit: 'Unit 2: Exponential Functions', title: 'Growth and Decay', description: 'Khan Academy · Algebra 1 Exponentials', videoId: 'hsFWih0i9W8', generator: 'exponential' },
-      { unit: 'Unit 3: Sequences & Function Notation', title: 'Arithmetic & Geometric Sequences', description: 'Khan Academy · Algebra 1 Functions', videoId: '1H3lW2rR9xQ', generator: 'sequence' },
-      { unit: 'Unit 4: Inequalities & Absolute Value', title: 'Solve Linear Inequalities', description: 'Khan Academy · Algebra 1 Inequalities', videoId: '4lI4XcUcYpo', generator: 'inequalities' },
-      { unit: 'Unit 5: Systems & Modeling', title: 'Linear Models', description: 'Khan Academy · Algebra 1 Modeling', videoId: '4lI4XcUcYpo', generator: 'systems' },
-      { unit: 'Unit 6: Statistics & Probability', title: 'Regression Models', description: 'Khan Academy · Algebra 1 Data', videoId: 'hsFWih0i9W8', generator: 'statistics' }
+      { unit: 'Unit 1: Quadratic Functions', title: 'Factoring and Vertex Form', description: 'Khan Academy · Algebra 1 Quadratics', videoId: 'eF6zYNzlZKQ', generator: 'quadratics' },
+      { unit: 'Unit 2: Exponential Functions', title: 'Growth and Decay', description: 'Khan Academy · Algebra 1 Exponentials', videoId: 'bXxkxJnqt3s', generator: 'exponential' },
+      { unit: 'Unit 3: Sequences & Function Notation', title: 'Arithmetic & Geometric Sequences', description: 'Khan Academy · Algebra 1 Functions', videoId: 'cDpBtkU2cf8', generator: 'sequence' },
+      { unit: 'Unit 4: Inequalities & Absolute Value', title: 'Solve Linear Inequalities', description: 'Khan Academy · Algebra 1 Inequalities', videoId: '68MakfeY8z8', generator: 'inequalities' },
+      { unit: 'Unit 5: Systems & Modeling', title: 'Linear Models', description: 'Khan Academy · Algebra 1 Modeling', videoId: '68MakfeY8z8', generator: 'systems' },
+      { unit: 'Unit 6: Statistics & Probability', title: 'Regression Models', description: 'Khan Academy · Algebra 1 Data', videoId: 'bXxkxJnqt3s', generator: 'statistics' }
     ],
     10: [
-      { unit: 'Unit 1: Geometry of Circles', title: 'Arcs, Angles, and Chords', description: 'Khan Academy · Geometry Circles', videoId: 'jfG8ZxwK0Kk', generator: 'geometry' },
+      { unit: 'Unit 1: Geometry of Circles', title: 'Arcs, Angles, and Chords', description: 'Khan Academy · Geometry Circles', videoId: '9uwLgf84p5w', generator: 'geometry' },
       { unit: 'Unit 2: Trigonometry Basics', title: 'Right Triangle Trig', description: 'Khan Academy · Geometry Trig', videoId: 'WUvTyaaNkzM', generator: 'trig' },
-      { unit: 'Unit 3: Probability & Statistics', title: 'Conditional Probability', description: 'Khan Academy · Geometry Probability', videoId: 'hsFWih0i9W8', generator: 'probability' },
-      { unit: 'Unit 4: Algebra Review', title: 'Quadratics and Functions', description: 'Khan Academy · Geometry Connections', videoId: 'jHwW5wy_L8o', generator: 'quadratics' },
-      { unit: 'Unit 5: Transformations & Similarity', title: 'Proofs with Congruence', description: 'Khan Academy · Geometry Transformations', videoId: 'jfG8ZxwK0Kk', generator: 'geometry' },
-      { unit: 'Unit 6: Sequences & Series', title: 'Recursive Patterns', description: 'Khan Academy · Geometry Connections', videoId: '1H3lW2rR9xQ', generator: 'sequence' }
+      { unit: 'Unit 3: Probability & Statistics', title: 'Conditional Probability', description: 'Khan Academy · Geometry Probability', videoId: 'bXxkxJnqt3s', generator: 'probability' },
+      { unit: 'Unit 4: Algebra Review', title: 'Quadratics and Functions', description: 'Khan Academy · Geometry Connections', videoId: 'eF6zYNzlZKQ', generator: 'quadratics' },
+      { unit: 'Unit 5: Transformations & Similarity', title: 'Proofs with Congruence', description: 'Khan Academy · Geometry Transformations', videoId: '9uwLgf84p5w', generator: 'geometry' },
+      { unit: 'Unit 6: Sequences & Series', title: 'Recursive Patterns', description: 'Khan Academy · Geometry Connections', videoId: 'cDpBtkU2cf8', generator: 'sequence' }
     ],
     11: [
-      { unit: 'Unit 1: Exponential & Log Models', title: 'Logs and Inverses', description: 'Khan Academy · Algebra 2 Logarithms', videoId: 'hsFWih0i9W8', generator: 'exponential' },
+      { unit: 'Unit 1: Exponential & Log Models', title: 'Logs and Inverses', description: 'Khan Academy · Algebra 2 Logarithms', videoId: 'bXxkxJnqt3s', generator: 'exponential' },
       { unit: 'Unit 2: Trigonometric Functions', title: 'Unit Circle & Graphs', description: 'Khan Academy · Precalculus Trig', videoId: 'WUvTyaaNkzM', generator: 'trig' },
-      { unit: 'Unit 3: Sequences & Series', title: 'Arithmetic and Geometric Series', description: 'Khan Academy · Precalculus Sequences', videoId: '1H3lW2rR9xQ', generator: 'sequence' },
-      { unit: 'Unit 4: Probability & Statistics', title: 'Normal Distribution & Sampling', description: 'Khan Academy · Precalculus Probability', videoId: 'hsFWih0i9W8', generator: 'statistics' },
-      { unit: 'Unit 5: Polynomial Functions', title: 'Power and Root Functions', description: 'Khan Academy · Algebra 2 Polynomials', videoId: 'jHwW5wy_L8o', generator: 'quadratics' },
-      { unit: 'Unit 6: Matrices & Systems', title: 'Solve with Matrices', description: 'Khan Academy · Algebra 2 Matrices', videoId: '1H3lW2rR9xQ', generator: 'systems' }
+      { unit: 'Unit 3: Sequences & Series', title: 'Arithmetic and Geometric Series', description: 'Khan Academy · Precalculus Sequences', videoId: 'cDpBtkU2cf8', generator: 'sequence' },
+      { unit: 'Unit 4: Probability & Statistics', title: 'Normal Distribution & Sampling', description: 'Khan Academy · Precalculus Probability', videoId: 'bXxkxJnqt3s', generator: 'statistics' },
+      { unit: 'Unit 5: Polynomial Functions', title: 'Power and Root Functions', description: 'Khan Academy · Algebra 2 Polynomials', videoId: 'eF6zYNzlZKQ', generator: 'quadratics' },
+      { unit: 'Unit 6: Matrices & Systems', title: 'Solve with Matrices', description: 'Khan Academy · Algebra 2 Matrices', videoId: 'cDpBtkU2cf8', generator: 'systems' }
     ],
     12: [
       { unit: 'Unit 1: Limits & Derivatives', title: 'Intro to Calculus', description: 'Khan Academy · AP Calculus', videoId: 'WUvTyaaNkzM', generator: 'calculus' },
-      { unit: 'Unit 2: Probability & Combinatorics', title: 'Counting Techniques', description: 'Khan Academy · AP Statistics', videoId: 'hsFWih0i9W8', generator: 'probability' },
-      { unit: 'Unit 3: Vectors & Parametric Motion', title: 'Vectors in the Plane', description: 'Khan Academy · AP Calculus Prep', videoId: 'jfG8ZxwK0Kk', generator: 'geometry' },
-      { unit: 'Unit 4: Sequences & Series', title: 'Taylor Series and Approximations', description: 'Khan Academy · AP Calculus Series', videoId: '1H3lW2rR9xQ', generator: 'sequence' },
+      { unit: 'Unit 2: Probability & Combinatorics', title: 'Counting Techniques', description: 'Khan Academy · AP Statistics', videoId: 'bXxkxJnqt3s', generator: 'probability' },
+      { unit: 'Unit 3: Vectors & Parametric Motion', title: 'Vectors in the Plane', description: 'Khan Academy · AP Calculus Prep', videoId: '9uwLgf84p5w', generator: 'geometry' },
+      { unit: 'Unit 4: Sequences & Series', title: 'Taylor Series and Approximations', description: 'Khan Academy · AP Calculus Series', videoId: 'cDpBtkU2cf8', generator: 'sequence' },
       { unit: 'Unit 5: Differential Equations', title: 'Slope Fields & Modeling', description: 'Khan Academy · AP Calculus Differential Equations', videoId: 'WUvTyaaNkzM', generator: 'calculus' },
-      { unit: 'Unit 6: Probability Distributions', title: 'Confidence Intervals', description: 'Khan Academy · AP Statistics Distributions', videoId: 'hsFWih0i9W8', generator: 'statistics' }
+      { unit: 'Unit 6: Probability Distributions', title: 'Confidence Intervals', description: 'Khan Academy · AP Statistics Distributions', videoId: 'bXxkxJnqt3s', generator: 'statistics' }
     ]
   };
 
 
   const mathBandCatalog = {
     elementary: [
-      { unit: 'Unit 1: Place Value & Base Ten', title: 'Place Value & Expanded Form', description: 'Khan Academy · Number & Operations in Base Ten', videoId: 'HWxFN7KSM2E', generator: 'placeValue' },
+      { unit: 'Unit 1: Place Value & Base Ten', title: 'Place Value & Expanded Form', description: 'Khan Academy · Number & Operations in Base Ten', videoId: 'cDpBtkU2cf8', generator: 'placeValue' },
       { unit: 'Unit 2: Addition & Subtraction Strategies', title: 'Multi-Digit Addition & Subtraction', description: 'Khan Academy · Grade 4 Addition & Subtraction', videoId: 'QkPa9V2wtZs', generator: 'addSub' },
       { unit: 'Unit 3: Fractions & Measurement', title: 'Fractions on the Number Line', description: 'Khan Academy · Grade 5 Fractions & Measurement', videoId: 'DnFrOetuUKg', generator: 'fractions' }
     ],
     middle: [
-      { unit: 'Unit 4: Ratios & Unit Rates', title: 'Ratios, Rates, and Percents', description: 'Khan Academy · Grade 6 Ratios', videoId: '1H3lW2rR9xQ', generator: 'ratios' },
-      { unit: 'Unit 5: Linear Functions & Slope', title: 'Slope-Intercept Form', description: 'Khan Academy · Grade 8 Linear Functions', videoId: '4lI4XcUcYpo', generator: 'linear' },
-      { unit: 'Unit 6: Geometry & Pythagorean Theorem', title: 'Right Triangles and Distance', description: 'Khan Academy · Grade 8 Geometry', videoId: 'jfG8ZxwK0Kk', generator: 'geometry' }
+      { unit: 'Unit 4: Ratios & Unit Rates', title: 'Ratios, Rates, and Percents', description: 'Khan Academy · Grade 6 Ratios', videoId: 'cDpBtkU2cf8', generator: 'ratios' },
+      { unit: 'Unit 5: Linear Functions & Slope', title: 'Slope-Intercept Form', description: 'Khan Academy · Grade 8 Linear Functions', videoId: '68MakfeY8z8', generator: 'linear' },
+      { unit: 'Unit 6: Geometry & Pythagorean Theorem', title: 'Right Triangles and Distance', description: 'Khan Academy · Grade 8 Geometry', videoId: '9uwLgf84p5w', generator: 'geometry' }
     ],
     high: [
-      { unit: 'Unit 7: Quadratic Functions', title: 'Quadratic Functions and Factoring', description: 'Khan Academy · Algebra II Quadratics', videoId: 'jHwW5wy_L8o', generator: 'quadratics' },
-      { unit: 'Unit 8: Exponential & Logarithmic Models', title: 'Exponential Models and Logs', description: 'Khan Academy · Exponential & Log Functions', videoId: 'hsFWih0i9W8', generator: 'exponential' },
+      { unit: 'Unit 7: Quadratic Functions', title: 'Quadratic Functions and Factoring', description: 'Khan Academy · Algebra II Quadratics', videoId: 'eF6zYNzlZKQ', generator: 'quadratics' },
+      { unit: 'Unit 8: Exponential & Logarithmic Models', title: 'Exponential Models and Logs', description: 'Khan Academy · Exponential & Log Functions', videoId: 'bXxkxJnqt3s', generator: 'exponential' },
       { unit: 'Unit 9: Trigonometry & Limits', title: 'Trigonometry, Vectors, and Limits', description: 'Khan Academy · Precalculus Prep', videoId: 'WUvTyaaNkzM', generator: 'trig' }
     ]
   };

@@ -312,12 +312,19 @@
     const buildVideoSrc = (videoId = '') => {
       if (!videoId) return '';
       const cleanId = videoId.replace(/[^a-zA-Z0-9_\-]/g, '');
-      return `https://www.youtube-nocookie.com/embed/${cleanId}?rel=0&modestbranding=1&playsinline=1`;
+      return `https://www.youtube.com/embed/${cleanId}?rel=0&modestbranding=1&playsinline=1`;
+    };
+
+    const buildVideoWatchUrl = (videoId = '') => {
+      if (!videoId) return '';
+      const cleanId = videoId.replace(/[^a-zA-Z0-9_\-]/g, '');
+      return `https://www.youtube.com/watch?v=${cleanId}`;
     };
 
     const openVideoLesson = (resource) => {
       if (!resource || !playerBody) return;
       const src = buildVideoSrc(resource.videoId);
+      const watchUrl = buildVideoWatchUrl(resource.videoId);
       playerBody.innerHTML = `
         <h3>${resource.title}</h3>
         ${src ? `
@@ -330,6 +337,10 @@
               referrerpolicy="strict-origin-when-cross-origin"
               allowfullscreen
             ></iframe>
+          </div>
+          <div class="resource-actions">
+            <a class="link-button" href="${watchUrl}" target="_blank" rel="noopener">Open video</a>
+            <button class="ghost-button" type="button" data-session-mode="practice" data-session-resource="${resource.id}">Practice this</button>
           </div>
         ` : '<div class="mini-empty">No video available yet.</div>'}
         <p>${resource.description || 'Review this lesson before practicing.'}</p>
@@ -803,6 +814,7 @@
     window.addEventListener('hashchange', openFromHash);
 
     renderResources();
+    openFromHash();
   </script>
 </body>
 </html>
